@@ -2,6 +2,67 @@
 
 A VS Code extension that shows your running agent sessions as a Kanban board or a list. It starts with Claude Code. Other agent systems (Copilot, ChatGPT, …) can be added as sources later.
 
+## Installation
+
+The steps are the same on Windows and macOS.
+
+### Prerequisites
+
+- [VS Code](https://code.visualstudio.com/) 1.94 or newer, with the `code` command on your PATH.
+  - **macOS:** in VS Code, open the Command Palette and run **Shell Command: Install 'code' command in PATH**.
+  - **Windows:** the installer adds it by default.
+- [Node.js](https://nodejs.org/) 20 or newer, which includes npm.
+- [Git](https://git-scm.com/) and the [GitHub CLI](https://cli.github.com/), signed in to an account that can see this private repo.
+  - **Windows:** `winget install GitHub.cli`
+  - **macOS:** `brew install gh`
+  - Then run `gh auth login`.
+- [Claude Code](https://claude.com/claude-code), CLI or VS Code extension. Without it the dashboard has nothing to show.
+
+### Install
+
+```sh
+gh repo clone kratner/agent-workspace-dashboard
+cd agent-workspace-dashboard
+npm install
+npm run package
+code --install-extension agent-workspace-dashboard-0.1.0.vsix
+```
+
+`npm run package` type-checks the code, builds it and writes the `.vsix` file. Use the file name it prints; the version number changes with each release.
+
+Then reload VS Code: Command Palette → **Developer: Reload Window**. Do this in every open window, or quit and reopen VS Code.
+
+### Check that it works
+
+1. A robot icon appears at the left of the status bar, e.g. **1 working**.
+2. Click it, or run **Agent Workspace: Open Dashboard** from the Command Palette.
+3. Your Claude Code sessions appear as cards.
+
+### Update
+
+```sh
+cd agent-workspace-dashboard
+git pull
+npm install
+npm run package
+code --install-extension agent-workspace-dashboard-<version>.vsix --force
+```
+
+Then reload the window.
+
+### Uninstall
+
+```sh
+code --uninstall-extension kratner.agent-workspace-dashboard
+```
+
+### Troubleshooting
+
+- **`code` or `gh` is "not recognized" right after installing it.** VS Code's built-in terminal keeps the PATH VS Code started with. Quit every VS Code window and reopen, or use a standalone terminal. On Windows you can also run gh by its full path: `& "C:\Program Files\GitHub CLI\gh.exe" auth login`.
+- **The dashboard is empty.**
+  - Claude Code keeps its session files in `~/.claude` (or `CLAUDE_CONFIG_DIR` if you set it). Check that the folder exists and that a Claude Code session is running.
+  - Ended sessions only show for the last 24 hours. The setting `agentWorkspace.endedWithinHours` changes that.
+
 ## What it shows
 
 Each card is one session. **Columns:** Waiting on you · Working · Idle · Ended.
