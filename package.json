@@ -1,0 +1,75 @@
+{
+  "name": "agent-workspace-dashboard",
+  "displayName": "Agent Workspace Dashboard",
+  "description": "See every running agent session at a glance, as a Kanban board or a list. Starts with Claude Code.",
+  "version": "0.1.0",
+  "publisher": "kratner",
+  "private": true,
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kratner/agent-workspace-dashboard.git"
+  },
+  "engines": {
+    "vscode": "^1.94.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onWebviewPanel:agentWorkspace.dashboard"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentWorkspace.openDashboard",
+        "title": "Open Dashboard",
+        "category": "Agent Workspace",
+        "icon": "$(layout)"
+      },
+      {
+        "command": "agentWorkspace.refresh",
+        "title": "Refresh Sessions",
+        "category": "Agent Workspace",
+        "icon": "$(refresh)"
+      }
+    ],
+    "configuration": {
+      "title": "Agent Workspace",
+      "properties": {
+        "agentWorkspace.endedWithinHours": {
+          "type": "number",
+          "default": 24,
+          "minimum": 0,
+          "description": "Show ended sessions whose last activity was within this many hours. 0 hides ended sessions."
+        },
+        "agentWorkspace.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a status bar item with the number of working and waiting sessions."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc -p . --noEmit && tsc -p src/webview --noEmit",
+    "production": "npm run typecheck && node esbuild.mjs --production",
+    "vscode:prepublish": "npm run production",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@types/vscode": "^1.94.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.3"
+  }
+}

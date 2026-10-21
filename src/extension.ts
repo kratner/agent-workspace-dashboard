@@ -1,0 +1,53 @@
+import * as vscode from 'vscode';
+import { DashboardPanel, VIEW_TYPE } from './dashboardPanel';
+import { SessionStore } from './sessionStore';
+import { ClaudeCodeSource } from './sources/claudeCode';
+import type { AgentSession } from './shared/types';
+
+const HOUR_MS = 3_600_000;
+
+export function activate(context: vscode.ExtensionContext): void {
+  const config = () => vscode.workspace.getConfiguration('agentWorkspace');
+  const endedWithinMs = () => Math.max(0, config().get<number>('endedWithinHours', 24)) * HOUR_MS;
+
+  // Register new agent systems here.
+  const store = new SessionStore([new ClaudeCodeSource(endedWithinMs)]);
+
+  const statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+  statusItem.command = 'agentWorkspace.openDashboard';
+  const updateStatus = (sessions: AgentSession[]) => {
+    if (!config().get<boolean>('showStatusBar', true)) {
+      statusItem.hide();
+      return;
+    }
+    const waiting = sessions.filter((s) => s.state === 'waiting').length;
+    const busy = sessions.filter((s) => s.state === 'busy').length;
+    const parts = [waiting && `${waiting} waiting`, busy && `${busy} working`].filter(Boolean);
+    statusItem.text = `$(hubot) ${parts.length ? parts.join(' · ') : 'Agents'}`;
+    statusItem.tooltip = 'Open the Agent Workspace dashboard';
+    statusItem.backgroundColor = waiting ? new vscode.ThemeColor('statusBarItem.warningBackground') : undefined;
+    statusItem.show();
+  };
+  updateStatus([]);
+
+  context.subscriptions.push(
+    store,
+    statusItem,
+    store.onDidChange(updateStatus),
+    vscode.commands.registerCommand('agentWorkspace.openDashboard', () => DashboardPanel.show(context, store)),
+    vscode.commands.registerCommand('agentWorkspace.refresh', () => store.refresh()),
+    vscode.window.registerWebviewPanelSerializer(VIEW_TYPE, {
+      async deserializeWebviewPanel(panel) {
+        DashboardPanel.revive(panel, context, store);
+      },
+    }),
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('agentWorkspace')) {
+        updateStatus(store.current);
+        void store.refresh();
+      }
+    }),
+  );
+}
+
+export function deactivate(): void {}

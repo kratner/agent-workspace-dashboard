@@ -1,0 +1,76 @@
+import * as vscode from 'vscode';
+import type { AgentSession, SessionState } from './shared/types';
+import type { SessionSource } from './sources/SessionSource';
+
+const STATE_ORDER: Record<SessionState, number> = { waiting: 0, busy: 1, idle: 2, ended: 3 };
+
+/** Merges every source into one sorted list and fires only when that list actually changes. */
+export class SessionStore implements vscode.Disposable {
+  private sessions: AgentSession[] = [];
+  private snapshot = '';
+  private readonly emitter = new vscode.EventEmitter<AgentSession[]>();
+  readonly onDidChange = this.emitter.event;
+
+  private readonly subscriptions: vscode.Disposable[] = [];
+  private debounce?: NodeJS.Timeout;
+  private running = false;
+  private queued = false;
+
+  constructor(readonly sources: SessionSource[]) {
+    for (const source of sources) this.subscriptions.push(source.onDidChange(() => this.schedule()));
+    this.schedule();
+  }
+
+  get current(): AgentSession[] {
+    return this.sessions;
+  }
+
+  find(key: string): { session: AgentSession; source: SessionSource } | undefined {
+    const session = this.sessions.find((s) => s.key === key);
+    const source = session && this.sources.find((s) => s.id === session.source);
+    return session && source ? { session, source } : undefined;
+  }
+
+  schedule(): void {
+    clearTimeout(this.debounce);
+    this.debounce = setTimeout(() => void this.refresh(), 150);
+  }
+
+  async refresh(): Promise<void> {
+    if (this.running) {
+      this.queued = true;
+      return;
+    }
+    this.running = true;
+    try {
+      const lists = await Promise.all(
+        this.sources.map((s) =>
+          s.list().catch((err) => {
+            console.error(`[agent-workspace] ${s.label} failed to list sessions`, err);
+            return [] as AgentSession[];
+          }),
+        ),
+      );
+      const next = lists.flat().sort((a, b) => STATE_ORDER[a.state] - STATE_ORDER[b.state] || b.updatedAt - a.updatedAt);
+      const snapshot = JSON.stringify(next);
+      if (snapshot !== this.snapshot) {
+        this.snapshot = snapshot;
+        this.sessions = next;
+        this.emitter.fire(next);
+      }
+    } finally {
+      this.running = false;
+      if (this.queued) {
+        this.queued = false;
+        void this.refresh();
+      }
+    }
+  }
+
+  dispose(): void {
+    clearTimeout(this.debounce);
+    for (const s of this.subscriptions) s.dispose();
+    for (const s of this.sources) s.dispose();
+    this.emitter.dispose();
+  }
+}
