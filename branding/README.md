@@ -28,9 +28,29 @@ The tile is a 128 × 128 rounded square, corner radius 28, with the gradient run
 | `icon/a-board.svg` | Three Kanban columns; the single glowing amber card is the session waiting on you. |
 | `icon/b-stack.svg` | Three session rows with status dots, like the List view; the waiting row is outlined. |
 | `icon/c-pulse.svg` | Board columns with a live heartbeat line crossing them. |
+| `kr/kr-github.svg` | Vector reproduction of Keith's GitHub avatar (see below). |
 | `kr/kr-monoline.svg` | K and R in one even stroke; R's leg in amber. |
 | `kr/kr-brackets.svg` | The same KR between blue code chevrons. |
 | `kr/kr-signal.svg` | The same KR with an amber status dot. |
+
+## The GitHub KR mark
+
+`kr/kr-github.svg` reproduces the avatar on github.com/kratner as vectors, so it can be used at any size. The original raster is kept at `kr/reference/github-avatar.png`. The SVG uses the avatar's own 460 px grid.
+
+| Element | Value |
+| --- | --- |
+| Yellow | `#FFF200` |
+| Background | `#000000`, rounded square, radius 20 on a 448 px tile with a 6 px margin |
+| K | A chevron, point at mid-height, sharing its stem with the R |
+| R | Bowl with a D-shaped hole, straight diagonal leg |
+
+The vector matches the avatar on 98.9% of its yellow pixels. The rest is about one pixel of edge softening in the original. To re-check after editing:
+
+```sh
+npm run brand:compare -- branding/kr/reference/github-avatar.png branding/kr/kr-github.svg branding/preview/kr-github-diff.png
+```
+
+In the diff image, red is only in the avatar and cyan is only in the SVG.
 
 ## Rendering
 

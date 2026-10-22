@@ -60,7 +60,8 @@
     "production": "npm run typecheck && node esbuild.mjs --production",
     "vscode:prepublish": "npm run production",
     "package": "vsce package --no-dependencies",
-    "brand": "node branding/render.mjs"
+    "brand": "node branding/render.mjs",
+    "brand:compare": "node branding/compare.mjs"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
@@ -70,6 +71,7 @@
     "@types/vscode": "^1.94.0",
     "@vscode/vsce": "^4.0.0",
     "esbuild": "^0.28.2",
+    "pngjs": "^7.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3"
