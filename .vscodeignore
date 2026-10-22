@@ -1,6 +1,7 @@
 .vscode/**
 src/**
 branding/**
+preview/**
 node_modules/**
 **/*.map
 esbuild.mjs

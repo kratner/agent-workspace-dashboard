@@ -1,12 +1,52 @@
-/* Uses VS Code's theme variables so the dashboard follows whatever theme is active. */
+/* Two appearances share one stylesheet. Components only use the semantic variables below;
+   each appearance (body[data-appearance]) sets them.
+   - brand:  KR brand kit (github.com/kratner/kr-brand): black, #FFF200, Archivo.
+   - vscode: follows the editor's color theme; keeps the KR mark and display type. */
+
+@font-face { font-family: 'Archivo Black'; src: url('./fonts/ArchivoBlack-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Archivo'; src: url('./fonts/Archivo-400.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Archivo'; src: url('./fonts/Archivo-700.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
 :root {
+  --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+}
+
+body[data-appearance='brand'] {
+  --bg: #000000;
+  --surface: #111111;
+  --surface-hover: #1c1c1c;
+  --fg: #ffffff;
+  --muted: #8a8a8a;
+  --border: #262626;
+  --accent: #fff200;
+  --on-accent: #000000;
+  --link: #fff200;
+  --focus: #fff200;
+  --waiting: #fff200;
+  --busy: #ffffff;
+  --idle: #8a8a8a;
+  --ended: #454545;
+  --font-text: 'Archivo', system-ui, sans-serif;
+  --font-size: 13px;
+}
+
+body[data-appearance='vscode'] {
+  --bg: var(--vscode-editor-background);
+  --surface: var(--vscode-sideBar-background, var(--vscode-editor-background));
+  --surface-hover: var(--vscode-list-hoverBackground);
+  --fg: var(--vscode-foreground);
+  --muted: var(--vscode-descriptionForeground);
+  --border: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
+  --accent: var(--vscode-focusBorder);
+  --on-accent: var(--vscode-badge-foreground);
+  --link: var(--vscode-textLink-foreground);
+  --focus: var(--vscode-focusBorder);
   --waiting: var(--vscode-charts-yellow, #cca700);
   --busy: var(--vscode-charts-blue, #3794ff);
   --idle: var(--vscode-charts-green, #89d185);
   --ended: var(--vscode-disabledForeground, #888);
-  --border: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
-  --muted: var(--vscode-descriptionForeground);
+  --font-text: var(--vscode-font-family);
+  --font-size: var(--vscode-font-size);
 }
 
 * {
@@ -16,10 +56,10 @@
 body {
   margin: 0;
   padding: 0;
-  color: var(--vscode-foreground);
-  background: var(--vscode-editor-background);
-  font-family: var(--vscode-font-family);
-  font-size: var(--vscode-font-size);
+  color: var(--fg);
+  background: var(--bg);
+  font-family: var(--font-text);
+  font-size: var(--font-size);
 }
 
 button {
@@ -53,6 +93,11 @@ button {
   .state-busy .dot { animation: none; }
 }
 
+:focus-visible {
+  outline: 1px solid var(--focus);
+  outline-offset: -1px;
+}
+
 /* Toolbar */
 
 .toolbar {
@@ -62,16 +107,35 @@ button {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px 16px;
-  padding: 10px 16px;
-  background: var(--vscode-editor-background);
+  gap: 12px 20px;
+  padding: 12px 16px;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kr-glyph {
+  width: 27px;
+  height: 20px;
+  flex: none;
+  color: var(--accent);
+}
+
+body[data-appearance='vscode'] .kr-glyph {
+  color: var(--fg);
 }
 
 .toolbar h1 {
   margin: 0;
-  font-size: 13px;
-  font-weight: 600;
+  font: 400 14px/1 var(--font-display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .tabs {
@@ -85,16 +149,17 @@ button {
   border: none;
   border-bottom: 2px solid transparent;
   color: var(--muted);
+  font-weight: 700;
   cursor: pointer;
 }
 
 .tab:hover {
-  color: var(--vscode-foreground);
+  color: var(--fg);
 }
 
 .tab.active {
-  color: var(--vscode-foreground);
-  border-bottom-color: var(--vscode-focusBorder);
+  color: var(--fg);
+  border-bottom-color: var(--accent);
 }
 
 .summary {
@@ -108,9 +173,15 @@ button {
   padding: 1px 8px;
   border-radius: 10px;
   border: 1px solid var(--state);
-  color: var(--vscode-foreground);
+  color: var(--fg);
   font-size: 11px;
   white-space: nowrap;
+}
+
+body[data-appearance='brand'] .pill.state-waiting {
+  background: var(--waiting);
+  color: var(--on-accent);
+  font-weight: 700;
 }
 
 .icon-button {
@@ -123,25 +194,20 @@ button {
 }
 
 .icon-button:hover {
-  background: var(--vscode-toolbar-hoverBackground);
+  background: var(--surface-hover);
 }
 
 .link-button {
   padding: 0;
   background: none;
   border: none;
-  color: var(--vscode-textLink-foreground);
+  color: var(--link);
   font-size: 11px;
   cursor: pointer;
 }
 
 .link-button:hover {
   text-decoration: underline;
-}
-
-:focus-visible {
-  outline: 1px solid var(--vscode-focusBorder);
-  outline-offset: -1px;
 }
 
 .content {
@@ -165,25 +231,36 @@ button {
   border: 1px solid var(--border);
   border-top: 2px solid var(--state);
   border-radius: 4px;
-  background: var(--vscode-sideBar-background, transparent);
+  background: var(--surface);
 }
 
 .column-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
-  font-weight: 600;
+  padding: 10px;
+  font: 400 12px/1 var(--font-display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .count {
   margin-left: auto;
-  padding: 0 6px;
+  padding: 2px 7px;
   border-radius: 8px;
+  background: var(--border);
+  color: var(--fg);
+  font: 700 11px var(--font-text);
+}
+
+.state-waiting .count {
+  background: var(--waiting);
+  color: var(--on-accent);
+}
+
+body[data-appearance='vscode'] .count {
   background: var(--vscode-badge-background);
   color: var(--vscode-badge-foreground);
-  font-size: 11px;
-  font-weight: normal;
 }
 
 .column-body {
@@ -200,20 +277,25 @@ button {
 }
 
 .card {
-  padding: 8px 10px;
+  padding: 9px 10px;
   border: 1px solid var(--border);
   border-left: 3px solid var(--state);
   border-radius: 3px;
-  background: var(--vscode-editor-background);
+  background: var(--bg);
   cursor: pointer;
 }
 
 .card:hover {
-  background: var(--vscode-list-hoverBackground);
+  background: var(--surface-hover);
+}
+
+body[data-appearance='brand'] .card.state-waiting {
+  border-color: var(--waiting);
+  box-shadow: 0 0 0 1px var(--waiting), 0 0 14px rgba(255, 242, 0, 0.18);
 }
 
 .card-title {
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
@@ -263,16 +345,18 @@ button {
 }
 
 .list th {
-  padding: 4px 8px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--border);
   color: var(--muted);
-  font-weight: normal;
+  font: 400 11px var(--font-display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   text-align: left;
   white-space: nowrap;
 }
 
 .list td {
-  padding: 5px 8px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
@@ -282,11 +366,11 @@ button {
 }
 
 .list tbody tr:hover {
-  background: var(--vscode-list-hoverBackground);
+  background: var(--surface-hover);
 }
 
 .list .state-cell {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
 }
@@ -296,10 +380,14 @@ button {
   max-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .list tr.state-ended .title-cell {
   color: var(--muted);
   font-weight: normal;
+}
+
+body[data-appearance='brand'] .list tr.state-waiting {
+  background: rgba(255, 242, 0, 0.07);
 }

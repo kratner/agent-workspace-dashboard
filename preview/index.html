@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- Preview harness: loads the built webview (npm run build) with sample sessions, outside VS Code.
+     Open in a browser:  preview/index.html?appearance=brand|vscode&view=kanban|list
+     The vscode appearance uses VS Code "Dark Modern" theme colors, since there's no real theme here. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Workspace preview</title>
+  <link rel="stylesheet" href="../dist/webview.css">
+  <style>
+    html {
+      --vscode-editor-background: #1f1f1f;
+      --vscode-sideBar-background: #181818;
+      --vscode-list-hoverBackground: #2a2d2e;
+      --vscode-foreground: #cccccc;
+      --vscode-descriptionForeground: #9d9d9d;
+      --vscode-panel-border: #2b2b2b;
+      --vscode-focusBorder: #0078d4;
+      --vscode-textLink-foreground: #4daafc;
+      --vscode-badge-background: #616161;
+      --vscode-badge-foreground: #f8f8f8;
+      --vscode-charts-yellow: #cca700;
+      --vscode-charts-blue: #3794ff;
+      --vscode-charts-green: #89d185;
+      --vscode-disabledForeground: #8b8b8b;
+      --vscode-font-family: "Segoe WPC", "Segoe UI", sans-serif;
+      --vscode-font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    var params = new URLSearchParams(location.search);
+    var now = Date.now();
+    var min = 60000;
+    function s(id, state, title, prompt, folder, surface, ago) {
+      return {
+        key: 'claude-code:' + id, source: 'claude-code', sourceLabel: 'Claude Code', id: id, title: title,
+        cwd: '/Users/you/dev/' + folder, state: state, rawStatus: state, surface: surface,
+        startedAt: now - ago - 30 * min, updatedAt: now - ago, lastPrompt: prompt,
+      };
+    }
+    // Neutral sample data: these show up in the README screenshots.
+    var sessions = [
+      s('a1', 'waiting', 'Database migration', 'run the migration against staging once the backup finishes', 'api', 'VS Code', 1 * min),
+      s('b1', 'busy', 'Refactor auth middleware', 'split token refresh out of the request handler', 'api', 'VS Code', 0),
+      s('b2', 'busy', 'API reference docs', 'document the sessions endpoints with examples', 'docs', 'Terminal', 3 * min),
+      s('i1', 'idle', 'Landing page copy', 'tighten the hero section and the pricing table', 'web', 'VS Code', 42 * min),
+      s('i2', 'idle', 'nightly-report', 'summarize yesterday’s error logs', 'reports', 'Background', 3 * 60 * min),
+      s('e1', 'ended', 'Fix flaky date tests', 'the date tests fail at midnight UTC', 'web', undefined, 5 * 60 * min),
+      s('e2', 'ended', 'Upgrade dependencies', 'bump React and the test runner', 'web', undefined, 20 * 60 * min),
+    ];
+    window.acquireVsCodeApi = function () {
+      return {
+        postMessage: function (m) {
+          if (m.type === 'ready') {
+            window.postMessage({
+              type: 'state', sessions: sessions, viewId: params.get('view') || 'kanban',
+              sources: ['Claude Code'], appearance: params.get('appearance') || 'brand',
+            }, '*');
+          }
+        },
+      };
+    };
+  </script>
+  <script src="../dist/webview.js"></script>
+</body>
+</html>

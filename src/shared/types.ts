@@ -25,11 +25,15 @@ export interface AgentSession {
   lastPrompt?: string;
 }
 
+/** 'brand': KR black and yellow. 'vscode': follow the editor's color theme. */
+export type Appearance = 'brand' | 'vscode';
+
 export interface DashboardState {
   type: 'state';
   sessions: AgentSession[];
   viewId: string;
   sources: string[];
+  appearance: Appearance;
 }
 
 export type HostMessage = DashboardState;
@@ -39,4 +43,6 @@ export type WebviewMessage =
   | { type: 'refresh' }
   | { type: 'setView'; viewId: string }
   | { type: 'open'; key: string }
-  | { type: 'copyResume'; key: string };
+  | { type: 'copyResume'; key: string }
+  /** Errors and milestones from the webview, written to the extension's output log. */
+  | { type: 'log'; level: 'info' | 'error'; message: string };

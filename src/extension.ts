@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { DashboardPanel, VIEW_TYPE } from './dashboardPanel';
+import { initLog, log } from './log';
 import { SessionStore } from './sessionStore';
 import { ClaudeCodeSource } from './sources/claudeCode';
 import type { AgentSession } from './shared/types';
@@ -7,6 +8,8 @@ import type { AgentSession } from './shared/types';
 const HOUR_MS = 3_600_000;
 
 export function activate(context: vscode.ExtensionContext): void {
+  initLog(context);
+  log.info(`activated v${context.extension.packageJSON.version}`);
   const config = () => vscode.workspace.getConfiguration('agentWorkspace');
   const endedWithinMs = () => Math.max(0, config().get<number>('endedWithinHours', 24)) * HOUR_MS;
 

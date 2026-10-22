@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import type { AgentSession, SessionState } from './shared/types';
+import { log } from './log';
 import type { SessionSource } from './sources/SessionSource';
 
 const STATE_ORDER: Record<SessionState, number> = { waiting: 0, busy: 1, idle: 2, ended: 3 };
@@ -46,7 +47,7 @@ export class SessionStore implements vscode.Disposable {
       const lists = await Promise.all(
         this.sources.map((s) =>
           s.list().catch((err) => {
-            console.error(`[agent-workspace] ${s.label} failed to list sessions`, err);
+            log.error(`${s.label} failed to list sessions`, err);
             return [] as AgentSession[];
           }),
         ),

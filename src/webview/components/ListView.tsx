@@ -17,9 +17,11 @@ export function ListView({ sessions, now, onOpen, onCopyResume }: ViewProps) {
       <tbody>
         {sessions.map((s) => (
           <tr key={s.key} className={`state-${s.state}`} tabIndex={0} onClick={() => onOpen(s)} onKeyDown={(e) => e.key === 'Enter' && onOpen(s)}>
-            <td className="state-cell">
-              <span className="dot" />
-              {stateLabel(s.state)}
+            <td>
+              <span className="state-cell">
+                <span className="dot" />
+                {stateLabel(s.state)}
+              </span>
             </td>
             <td className="title-cell" title={s.lastPrompt}>
               {s.title}

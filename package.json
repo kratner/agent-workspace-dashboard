@@ -1,15 +1,23 @@
 {
   "name": "agent-workspace-dashboard",
   "displayName": "Agent Workspace Dashboard",
-  "description": "See every running agent session at a glance, as a Kanban board or a list. Starts with Claude Code.",
-  "version": "0.1.0",
+  "description": "See every Claude Code session you have running, as a Kanban board or a list, and spot the one that's waiting on you.",
+  "version": "0.2.1",
   "publisher": "kratner",
+  "author": {
+    "name": "Keith Ratner",
+    "url": "https://github.com/kratner"
+  },
   "private": true,
   "license": "UNLICENSED",
   "icon": "media/icon.png",
   "galleryBanner": {
     "color": "#000000",
     "theme": "dark"
+  },
+  "homepage": "https://github.com/kratner/agent-workspace-dashboard#readme",
+  "bugs": {
+    "url": "https://github.com/kratner/agent-workspace-dashboard/issues"
   },
   "repository": {
     "type": "git",
@@ -19,7 +27,18 @@
     "vscode": "^1.94.0"
   },
   "categories": [
+    "AI",
+    "Visualization",
     "Other"
+  ],
+  "keywords": [
+    "claude",
+    "claude code",
+    "agents",
+    "ai",
+    "sessions",
+    "kanban",
+    "dashboard"
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
@@ -44,6 +63,19 @@
     "configuration": {
       "title": "Agent Workspace",
       "properties": {
+        "agentWorkspace.appearance": {
+          "type": "string",
+          "enum": [
+            "brand",
+            "vscode"
+          ],
+          "enumDescriptions": [
+            "KR brand: black panel, yellow for sessions waiting on you, Archivo type.",
+            "Follow the current VS Code color theme (keeps the KR mark and type)."
+          ],
+          "default": "brand",
+          "description": "How the dashboard looks."
+        },
         "agentWorkspace.endedWithinHours": {
           "type": "number",
           "default": 24,
@@ -64,7 +96,7 @@
     "typecheck": "tsc -p . --noEmit && tsc -p src/webview --noEmit",
     "production": "npm run typecheck && node esbuild.mjs --production",
     "vscode:prepublish": "npm run production",
-    "package": "vsce package --no-dependencies",
+    "package": "vsce package --no-dependencies --no-rewrite-relative-links",
     "brand": "node branding/render.mjs",
     "brand:compare": "node branding/compare.mjs"
   },

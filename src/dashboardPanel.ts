@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import type { HostMessage, WebviewMessage } from './shared/types';
+import { log } from './log';
+import type { Appearance, HostMessage, WebviewMessage } from './shared/types';
 import type { SessionStore } from './sessionStore';
 
 export const VIEW_TYPE = 'agentWorkspace.dashboard';
@@ -35,16 +36,28 @@ export class DashboardPanel implements vscode.Disposable {
     private readonly context: vscode.ExtensionContext,
     private readonly store: SessionStore,
   ) {
-    panel.webview.html = this.html();
+    panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'media', 'icon.png');
+    // Listen before setting the HTML, so the webview's first message can't arrive unheard.
     this.disposables.push(
-      panel.webview.onDidReceiveMessage((m: WebviewMessage) => void this.handle(m)),
+      panel.webview.onDidReceiveMessage((m: WebviewMessage) =>
+        this.handle(m).catch((err) => log.error(`handling "${m?.type}" from the webview failed`, err)),
+      ),
       store.onDidChange(() => this.post()),
+      vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration('agentWorkspace.appearance')) this.post();
+      }),
       panel.onDidDispose(() => this.dispose()),
     );
+    panel.webview.html = this.html();
+    log.info(`dashboard webview created (extension at ${context.extensionUri.fsPath})`);
   }
 
   private async handle(message: WebviewMessage): Promise<void> {
+    if (message.type !== 'log') log.info(`webview → ${message.type}`);
     switch (message.type) {
+      case 'log':
+        log[message.level](`[webview] ${message.message}`);
+        break;
       case 'ready':
         this.post();
         void this.store.refresh();
@@ -78,8 +91,14 @@ export class DashboardPanel implements vscode.Disposable {
       sessions: this.store.current,
       viewId: this.context.workspaceState.get<string>(ACTIVE_VIEW_KEY, DEFAULT_VIEW),
       sources: this.store.sources.map((s) => s.label),
+      appearance: vscode.workspace.getConfiguration('agentWorkspace').get<Appearance>('appearance', 'brand'),
     };
-    void this.panel.webview.postMessage(message);
+    this.panel.webview.postMessage(message).then(
+      (delivered) => {
+        if (!delivered) log.error('state message was not delivered (webview not ready or disposed)');
+      },
+      (err) => log.error('posting state to the webview failed', err),
+    );
   }
 
   private html(): string {

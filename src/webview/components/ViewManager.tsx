@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { AgentSession, DashboardState, HostMessage } from '../../shared/types';
 import { VIEWS, findView } from '../viewRegistry';
-import { post } from '../vscodeApi';
+import { KrGlyph } from './KrGlyph';
+import { log, post } from '../vscodeApi';
 
 const TICK_MS = 15_000;
 
@@ -11,14 +12,20 @@ export function ViewManager() {
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
+    let first = true;
     const onMessage = (event: MessageEvent<HostMessage>) => {
       if (event.data?.type !== 'state') return;
+      if (first) {
+        first = false;
+        log('info', `first state received: ${event.data.sessions.length} sessions`);
+      }
       setState(event.data);
       setNow(Date.now());
       // The saved view only applies on first load; after that the user's choice in this tab wins.
       setViewId((current) => current ?? event.data.viewId);
     };
     window.addEventListener('message', onMessage);
+    log('info', 'webview script running; sending ready');
     post({ type: 'ready' });
     const tick = setInterval(() => setNow(Date.now()), TICK_MS);
     return () => {
@@ -26,6 +33,11 @@ export function ViewManager() {
       clearInterval(tick);
     };
   }, []);
+
+  const appearance = state?.appearance ?? 'brand';
+  useEffect(() => {
+    document.body.dataset.appearance = appearance;
+  }, [appearance]);
 
   const view = findView(viewId);
   const selectView = (id: string) => {
@@ -44,7 +56,10 @@ export function ViewManager() {
   return (
     <div className="app">
       <header className="toolbar">
-        <h1>Agent Workspace</h1>
+        <div className="brand">
+          <KrGlyph />
+          <h1>Agent Workspace</h1>
+        </div>
         <div className="tabs" role="tablist" aria-label="View">
           {VIEWS.map((v) => (
             <button
