@@ -28,6 +28,7 @@ The tile is a 128 × 128 rounded square, corner radius 28, with the gradient run
 | `icon/a-board.svg` | Three Kanban columns; the single glowing amber card is the session waiting on you. |
 | `icon/b-stack.svg` | Three session rows with status dots, like the List view; the waiting row is outlined. |
 | `icon/c-pulse.svg` | Board columns with a live heartbeat line crossing them. |
+| `icon/d-board-kr.svg` | **Shipping icon.** Concept A in the KR colors: the waiting card is the only yellow (`#FFF200`); working and idle cards are neutral grays on black. `npm run brand` renders it to `media/icon.png`. |
 | `kr/kr-github.svg` | Vector reproduction of Keith's GitHub avatar (see below). |
 | `kr/kr-monoline.svg` | K and R in one even stroke; R's leg in amber. |
 | `kr/kr-brackets.svg` | The same KR between blue code chevrons. |

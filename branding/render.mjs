@@ -11,6 +11,9 @@ const root = dirname(fileURLToPath(import.meta.url));
 const out = join(root, 'preview');
 mkdirSync(out, { recursive: true });
 
+// The concept that ships as the extension's Marketplace / Extensions-view icon (package.json "icon").
+const EXTENSION_ICON = 'icon/d-board-kr.svg';
+
 const render = (svg, width) => new Resvg(svg, { fitTo: { mode: 'width', value: width } }).render().asPng();
 const dataUri = (png) => `data:image/png;base64,${png.toString('base64')}`;
 
@@ -56,4 +59,8 @@ rows.forEach((row, r) => {
 
 const sheet = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${body}</svg>`;
 writeFileSync(join(out, 'sheet.png'), new Resvg(sheet, { font: { loadSystemFonts: true } }).render().asPng());
+const media = join(root, '..', 'media');
+mkdirSync(media, { recursive: true });
+writeFileSync(join(media, 'icon.png'), render(readFileSync(join(root, EXTENSION_ICON), 'utf8'), 256));
+console.log(`Extension icon: media/icon.png from ${EXTENSION_ICON}`);
 console.log(`Rendered ${groups.reduce((n, g) => n + g.marks.length, 0)} marks to ${out}`);
