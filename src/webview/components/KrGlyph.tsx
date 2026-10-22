@@ -1,4 +1,4 @@
-// The KR mark from the brand kit (github.com/kratner/kr-brand, src/brand.mjs). Drawn in
+// The KR mark from Keith Ratner's KR brand kit (its src/brand.mjs). Drawn in
 // currentColor so the stylesheet decides its color per appearance.
 const GLYPH_PATH =
   'M22 75 H136 L198 169 V75 H330 C402 75 429 108 429 170 C429 228 404 258 356 265 ' +

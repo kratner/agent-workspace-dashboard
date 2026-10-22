@@ -1,6 +1,6 @@
 /* Two appearances share one stylesheet. Components only use the semantic variables below;
    each appearance (body[data-appearance]) sets them.
-   - brand:  KR brand kit (github.com/kratner/kr-brand): black, #FFF200, Archivo.
+   - brand:  Keith Ratner's KR brand kit: black, #FFF200, Archivo.
    - vscode: follows the editor's color theme; keeps the KR mark and display type. */
 
 @font-face { font-family: 'Archivo Black'; src: url('./fonts/ArchivoBlack-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }

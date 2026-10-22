@@ -1,6 +1,6 @@
 # Branding
 
-> The KR mark, colors and type now live in the brand kit, [kratner/kr-brand](https://github.com/kratner/kr-brand). Take KR assets from there. This folder keeps the extension's own icon concepts and the original tracing work.
+> The KR mark, colors and type now live in Keith Ratner's KR brand kit, a separate repository. Take KR assets from there. This folder keeps the extension's own icon concepts and the original tracing work.
 
 Working files for the Agent Workspace Dashboard icon and the Keith Ratner "KR" mark.
 

@@ -9,7 +9,7 @@
     "url": "https://github.com/kratner"
   },
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "icon": "media/icon.png",
   "galleryBanner": {
     "color": "#000000",

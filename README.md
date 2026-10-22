@@ -81,4 +81,8 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Author
 
-Created by **Keith Ratner** ([github.com/kratner](https://github.com/kratner)). The icon, colors and type come from his KR brand. The bundled fonts, Archivo and Archivo Black, are under the SIL Open Font License (see `licenses/`).
+Created by **Keith Ratner** ([github.com/kratner](https://github.com/kratner)). The icon, colors and type come from his KR brand.
+
+## License
+
+[MIT](LICENSE) © 2026 Keith Ratner. The bundled fonts, Archivo and Archivo Black, are under the SIL Open Font License; see `licenses/`.
