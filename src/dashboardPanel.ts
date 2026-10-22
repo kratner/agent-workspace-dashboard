@@ -53,7 +53,7 @@ export class DashboardPanel implements vscode.Disposable {
   }
 
   private async handle(message: WebviewMessage): Promise<void> {
-    if (message.type !== 'log') log.info(`webview → ${message.type}`);
+    if (message.type !== 'log') log.info(`webview -> ${message.type}`);
     switch (message.type) {
       case 'log':
         log[message.level](`[webview] ${message.message}`);
@@ -86,6 +86,9 @@ export class DashboardPanel implements vscode.Disposable {
   }
 
   private post(): void {
+    // A hidden tab's webview is unloaded (no retainContextWhenHidden). It sends 'ready' when it
+    // comes back, and gets the current state then.
+    if (!this.panel.visible) return;
     const message: HostMessage = {
       type: 'state',
       sessions: this.store.current,
@@ -93,12 +96,7 @@ export class DashboardPanel implements vscode.Disposable {
       sources: this.store.sources.map((s) => s.label),
       appearance: vscode.workspace.getConfiguration('agentWorkspace').get<Appearance>('appearance', 'brand'),
     };
-    this.panel.webview.postMessage(message).then(
-      (delivered) => {
-        if (!delivered) log.error('state message was not delivered (webview not ready or disposed)');
-      },
-      (err) => log.error('posting state to the webview failed', err),
-    );
+    this.panel.webview.postMessage(message).then(undefined, (err) => log.error('posting state to the webview failed', err));
   }
 
   private html(): string {

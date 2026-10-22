@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 (2026-10-22)
+
+- The images on the extension's Details page now link to the GitHub repository, because VS Code doesn't load relative image paths there. They display once the repository is public.
+- The dashboard no longer sends updates while its tab is hidden. It gets fresh state when you return to it, so the log no longer fills with "not delivered" errors.
+
 ## 0.2.1 (2026-10-22)
 
 - New **Agent Workspace** log in the Output panel. It records the dashboard's startup, the messages between the extension and the dashboard, and any error, including errors inside the dashboard itself.
