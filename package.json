@@ -59,9 +59,11 @@
     "typecheck": "tsc -p . --noEmit && tsc -p src/webview --noEmit",
     "production": "npm run typecheck && node esbuild.mjs --production",
     "vscode:prepublish": "npm run production",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package --no-dependencies",
+    "brand": "node branding/render.mjs"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
