@@ -80,7 +80,6 @@ If you've set `CLAUDE_CONFIG_DIR`, the dashboard reads that folder instead of `~
 ## Known limitations
 
 - **The status files aren't an official API.** Claude Code's session status files are internal and undocumented, so a Claude Code update could change them. The dashboard reads them defensively: a status it doesn't recognise shows as Idle.
-- **"Waiting on you" depends on Claude Code.** That column only fills if Claude Code records a waiting state in its status files. This hasn't been confirmed yet.
 - **Sessions in other windows or terminals.** The dashboard can't switch to another VS Code window or a terminal. It tells you where the session is running instead.
 - **Claude Code only, for now.** Other agent systems such as Copilot or ChatGPT can be added as sources later; see [DEVELOPMENT.md](DEVELOPMENT.md).
 
