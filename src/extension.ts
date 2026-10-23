@@ -1,8 +1,10 @@
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { DashboardPanel, VIEW_TYPE } from './dashboardPanel';
+import { HistoryService } from './history/historyService';
 import { initLog, log } from './log';
 import { SessionStore } from './sessionStore';
-import { ClaudeCodeSource } from './sources/claudeCode';
+import { ClaudeCodeSource, claudeConfigDir } from './sources/claudeCode';
 import type { AgentSession } from './shared/types';
 
 const HOUR_MS = 3_600_000;
@@ -15,6 +17,11 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Register new agent systems here.
   const store = new SessionStore([new ClaudeCodeSource(endedWithinMs)]);
+  // Built on the first history search, then cached per machine in the extension's storage.
+  const history = new HistoryService(
+    path.join(claudeConfigDir(), 'projects'),
+    path.join(context.globalStorageUri.fsPath, 'history-index-v1.json'),
+  );
 
   const statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
   statusItem.command = 'agentWorkspace.openDashboard';
@@ -35,13 +42,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     store,
+    history,
     statusItem,
     store.onDidChange(updateStatus),
-    vscode.commands.registerCommand('agentWorkspace.openDashboard', () => DashboardPanel.show(context, store)),
+    vscode.commands.registerCommand('agentWorkspace.openDashboard', () => DashboardPanel.show(context, store, history)),
     vscode.commands.registerCommand('agentWorkspace.refresh', () => store.refresh()),
     vscode.window.registerWebviewPanelSerializer(VIEW_TYPE, {
       async deserializeWebviewPanel(panel) {
-        DashboardPanel.revive(panel, context, store);
+        DashboardPanel.revive(panel, context, store, history);
       },
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {

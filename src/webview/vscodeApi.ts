@@ -16,6 +16,10 @@ export function post(message: WebviewMessage): void {
 /** Per-tab UI state that survives VS Code unloading the hidden webview. */
 export interface WebviewUiState {
   query?: string;
+  /** Search past sessions too. */
+  history?: boolean;
+  /** Include matches inside subagent transcripts (default on). */
+  includeSubagents?: boolean;
 }
 
 export function getUiState(): WebviewUiState {

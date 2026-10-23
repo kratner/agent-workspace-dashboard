@@ -13,12 +13,13 @@ See every Claude Code session you have running, as a Kanban board or a list, and
 - **Kanban and List views.** Sessions are grouped by state: Waiting on you, Working, Idle and Ended. Switch views in the header; the dashboard remembers your choice for each workspace.
 - **Know what needs you.** A session waiting for your reply or approval gets its own column, a highlighted card and a count in the status bar.
 - **Search.** Filter either view as you type, by title, prompt, folder, where it runs or state. Matches are highlighted.
+- **Search your whole history.** Switch on **History** to search every past Claude Code session on the machine, including what its subagents did, and resume any of them.
 - **Live.** Cards move as sessions change state. You never need to refresh.
 - **Every session, wherever it runs.** It shows Claude Code panels in VS Code, the CLI in a terminal and background agents, across all your project folders.
 - **Click to open.** Clicking a card brings a session in this window to the front, or resumes an ended one. For a session running elsewhere, it tells you where.
 - **Resume ended sessions.** **Copy resume** puts the `claude --resume` command for that session on your clipboard.
 - **Two looks.** The KR brand (black and yellow) by default, or follow your VS Code color theme.
-- **Read-only and local.** It reads files Claude Code already writes on your machine. It never starts, stops or changes a session, and it sends nothing over the network.
+- **Read-only and local.** It reads files Claude Code already writes on your machine. It never starts, stops or changes a session, and it sends nothing over the network. The history index is stored locally, in the extension's own storage.
 
 ![List view](media/screenshots/list-brand.png)
 
@@ -38,9 +39,24 @@ Type in the search box in the header, or press `/` or Ctrl+F (⌘F on macOS) to 
 - **Several words:** a session must contain all of them. `api waiting` finds the waiting session in the `api` folder.
 - **Matches are highlighted.** In the List view, which has no prompt column, a prompt that matched appears under the title while you search.
 - **Your search stays** when you switch tabs and come back. Press Esc in the box to clear it.
-- **Scope:** search covers the sessions on the dashboard, meaning running ones plus those ended within `agentWorkspace.endedWithinHours`.
+- **Scope:** search covers the sessions on the dashboard, meaning running ones plus those ended within `agentWorkspace.endedWithinHours`. To go further back, switch on History.
 
 ![Searching for "api"](media/screenshots/search-brand.png)
+
+### Searching history
+
+Click **History** next to the search box. While it's on, a **From history** section lists matching past sessions below the current ones, newest first.
+
+- **What it searches:** every Claude Code session on this machine. For each one it reads the title, the folder and **every prompt you typed**, not just the last one. It doesn't search Claude's replies or tool output.
+- **Results:** each row shows the session's title, folder, date and the line that matched. Click a row to resume the session, or use **Copy resume** to get the terminal command.
+- **Subagents:** work done inside a subagent counts too. A match there appears under its parent session, as **↳ Found in subagent: *task description***, with the matching line. If several subagents match, the first one is shown with **+N more subagents** to expand. Untick **Include subagents** to search only top-level sessions.
+- **Lots of matches:** up to 150 results all show. Above that you see the 25 most recent first, with a **Show all** button; the rest then load as you scroll. The `agentWorkspace.historyResultThreshold` setting moves that cut-off anywhere from 100 to 200.
+- **Indexing:**
+  - The first time you search history, the extension builds an index of your transcripts in the background, with a progress line. On a 1 GB history it took under 2 seconds.
+  - After that it only reads what's new, and the index is cached between restarts.
+  - It's stored only on this machine, in the extension's own storage.
+
+![History search: past sessions below the current ones, with a match inside a subagent](media/screenshots/history-brand.png)
 
 ## Commands
 
@@ -56,6 +72,7 @@ Type in the search box in the header, or press `/` or Ctrl+F (⌘F on macOS) to 
 | `agentWorkspace.appearance` | `brand` | `brand` is the KR black-and-yellow look. `vscode` follows your color theme; use it with light themes. |
 | `agentWorkspace.endedWithinHours` | `24` | How far back to show ended sessions. `0` hides them. |
 | `agentWorkspace.showStatusBar` | `true` | Show the working and waiting counts in the status bar |
+| `agentWorkspace.historyResultThreshold` | `150` | History search: above this many matches (100–200), show the 25 most recent first, with a button to show all |
 
 ![Following the VS Code theme](media/screenshots/kanban-vscode.png)
 

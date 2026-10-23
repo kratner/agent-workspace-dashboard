@@ -9,3 +9,6 @@ tsconfig.json
 .gitignore
 .gitattributes
 media/screenshots/**
+test/**
+out-test/**
+ROADMAP.md

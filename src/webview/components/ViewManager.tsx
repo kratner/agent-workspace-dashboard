@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { AgentSession, DashboardState, HostMessage } from '../../shared/types';
+import { clampThreshold } from '../historyPaging';
 import { filterSessions, searchTerms } from '../search';
+import { HistoryPanel } from './HistoryPanel';
 import { VIEWS, findView } from '../viewRegistry';
 import { KrGlyph } from './KrGlyph';
 import { getUiState, log, post, setUiState } from '../vscodeApi';
@@ -12,20 +14,23 @@ export function ViewManager() {
   const [viewId, setViewId] = useState<string>();
   const [now, setNow] = useState(Date.now());
   const [query, setQuery] = useState(() => getUiState().query ?? '');
+  const [history, setHistory] = useState(() => getUiState().history ?? false);
+  const [includeSubagents, setIncludeSubagents] = useState(() => getUiState().includeSubagents ?? true);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let first = true;
     const onMessage = (event: MessageEvent<HostMessage>) => {
-      if (event.data?.type !== 'state') return;
+      const m = event.data;
+      if (m?.type !== 'state') return; // history messages are handled by HistoryPanel
       if (first) {
         first = false;
-        log('info', `first state received: ${event.data.sessions.length} sessions`);
+        log('info', `first state received: ${m.sessions.length} sessions`);
       }
-      setState(event.data);
+      setState(m);
       setNow(Date.now());
       // The saved view only applies on first load; after that the user's choice in this tab wins.
-      setViewId((current) => current ?? event.data.viewId);
+      setViewId((current) => current ?? m.viewId);
     };
     window.addEventListener('message', onMessage);
     log('info', 'webview script running; sending ready');
@@ -60,6 +65,15 @@ export function ViewManager() {
   const updateQuery = (value: string) => {
     setQuery(value);
     setUiState({ query: value });
+  };
+  const toggleHistory = () => {
+    setHistory(!history);
+    setUiState({ history: !history });
+    searchRef.current?.focus();
+  };
+  const updateIncludeSubagents = (value: boolean) => {
+    setIncludeSubagents(value);
+    setUiState({ includeSubagents: value });
   };
 
   const view = findView(viewId);
@@ -104,7 +118,7 @@ export function ViewManager() {
             ref={searchRef}
             type="search"
             value={query}
-            placeholder="Search sessions  ( / )"
+            placeholder={history ? 'Search all sessions, past and present  ( / )' : 'Search sessions  ( / )'}
             aria-label="Search sessions"
             spellCheck={false}
             onChange={(e) => updateQuery(e.target.value)}
@@ -120,6 +134,14 @@ export function ViewManager() {
               {sessions.length} of {allSessions.length}
             </span>
           ) : null}
+          <button
+            className={history ? 'toggle on' : 'toggle'}
+            aria-pressed={history}
+            title="Also search every past Claude Code session on this machine"
+            onClick={toggleHistory}
+          >
+            History
+          </button>
         </div>
         <div className="summary">
           {state ? (
@@ -137,17 +159,41 @@ export function ViewManager() {
       <main className="content">
         {!state ? (
           <p className="placeholder">Loading sessions…</p>
-        ) : allSessions.length === 0 ? (
-          <p className="placeholder">No {state.sources.join(' or ')} sessions are running or ended recently.</p>
-        ) : searching && sessions.length === 0 ? (
-          <p className="placeholder">
-            No sessions match “{query.trim()}”.{' '}
-            <button className="link-button inline" onClick={() => updateQuery('')}>
-              Clear search
-            </button>
-          </p>
         ) : (
-          <View sessions={sessions} now={now} terms={terms} {...actions} />
+          <>
+            {allSessions.length === 0 ? (
+              <p className="placeholder">No {state.sources.join(' or ')} sessions are running or ended recently.</p>
+            ) : searching && sessions.length === 0 ? (
+              history ? (
+                <p className="placeholder">No current sessions match.</p>
+              ) : (
+                <p className="placeholder">
+                  No sessions match “{query.trim()}”.{' '}
+                  <button className="link-button inline" onClick={() => updateQuery('')}>
+                    Clear search
+                  </button>{' '}
+                  or{' '}
+                  <button className="link-button inline" onClick={toggleHistory}>
+                    search history
+                  </button>
+                </p>
+              )
+            ) : (
+              <View sessions={sessions} now={now} terms={terms} {...actions} />
+            )}
+            {history && searching ? (
+              <HistoryPanel
+                query={query}
+                terms={terms}
+                includeSubagents={includeSubagents}
+                onIncludeSubagents={updateIncludeSubagents}
+                threshold={clampThreshold(state.historyThreshold)}
+                now={now}
+              />
+            ) : history ? (
+              <p className="placeholder history-hint">History is on: type in the search box to search every past session too.</p>
+            ) : null}
+          </>
         )}
       </main>
     </div>

@@ -20,7 +20,7 @@ git clone https://github.com/kratner/agent-workspace-dashboard.git
 cd agent-workspace-dashboard
 npm install
 npm run package
-code --install-extension agent-workspace-dashboard-0.3.0.vsix
+code --install-extension agent-workspace-dashboard-0.4.0.vsix
 ```
 
 `npm run package` type-checks the code, builds it and writes the `.vsix` file. Use the file name it prints; the version number changes with each release.
@@ -59,6 +59,7 @@ npm run build        # dev build with sourcemaps
 npm run watch        # rebuild on change
 npm run production   # typecheck + clean minified build + dependency-leak check
 npm run package      # production build, then a .vsix
+npm test             # unit tests (history index, paging), on synthetic transcripts
 ```
 
 Press **F5** to launch an Extension Development Host.
@@ -76,6 +77,9 @@ The production build fails if either bundle leaves an import unbundled. The host
 
 - `?appearance=vscode` shows the theme-following look (with VS Code Dark Modern colors).
 - `?view=list` shows the List view.
+- `?q=api` fills the search box.
+- `&history=1` switches History on, with invented past sessions. `q=deploy` returns 340 of them, to show the short list. `q=breaking` matches only inside subagents.
+- `&indexing=1` shows the indexing progress line.
 
 The README screenshots in `media/screenshots/` are taken from this page.
 
@@ -88,8 +92,11 @@ The README screenshots in `media/screenshots/` are taken from this page.
 | `src/sources/SessionSource.ts` | The interface every agent system implements |
 | `src/sources/claudeCode.ts` | Reads `~/.claude/sessions/*.json`, checks the process is alive, maps the status |
 | `src/sources/claudeTranscripts.ts` | Reads titles and last prompts from transcripts; after the first read it only reads what was appended |
-| `src/dashboardPanel.ts` | The webview tab; stores the active view in `workspaceState` |
-| `src/webview/` | React UI: `ViewManager`, `KanbanView`, `ListView`, `viewRegistry.ts` |
+| `src/dashboardPanel.ts` | The webview tab; stores the active view in `workspaceState`; answers history searches |
+| `src/history/historyIndex.ts` | History search index over every transcript and subagent transcript. Typed prompts only, incremental reads, cached to disk. No `vscode` imports, so it's unit-testable |
+| `src/history/historyService.ts` | VS Code glue around the index: background refresh, throttled progress, paged queries |
+| `src/webview/` | React UI: `ViewManager`, `KanbanView`, `ListView`, `HistoryPanel`, `viewRegistry.ts` |
+| `test/` | `node:test` unit tests, bundled with esbuild by `test/run.mjs` |
 
 ### Adding an agent system
 

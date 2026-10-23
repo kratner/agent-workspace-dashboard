@@ -2,7 +2,7 @@
   "name": "agent-workspace-dashboard",
   "displayName": "Agent Workspace Dashboard",
   "description": "See every Claude Code session you have running, as a Kanban board or a list, and spot the one that's waiting on you.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "kratner",
   "author": {
     "name": "Keith Ratner",
@@ -86,6 +86,13 @@
           "type": "boolean",
           "default": true,
           "description": "Show a status bar item with the number of working and waiting sessions."
+        },
+        "agentWorkspace.historyResultThreshold": {
+          "type": "number",
+          "default": 150,
+          "minimum": 100,
+          "maximum": 200,
+          "description": "History search: above this many matching past sessions, show the 25 most recent first, with a button to show them all."
         }
       }
     }
@@ -98,7 +105,8 @@
     "vscode:prepublish": "npm run production",
     "package": "vsce package --no-dependencies",
     "brand": "node branding/render.mjs",
-    "brand:compare": "node branding/compare.mjs"
+    "brand:compare": "node branding/compare.mjs",
+    "test": "node test/run.mjs"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",

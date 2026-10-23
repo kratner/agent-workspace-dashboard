@@ -198,6 +198,33 @@ body[data-appearance='vscode'] .search input {
   border-color: var(--vscode-input-border, var(--border));
 }
 
+.toggle {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  color: var(--fg);
+}
+
+.toggle.on {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+body[data-appearance='brand'] .toggle.on {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 .search-count {
   color: var(--muted);
   font-size: 11px;
@@ -277,6 +304,157 @@ body[data-appearance='brand'] .pill.state-waiting.nonzero {
 
 .placeholder {
   color: var(--muted);
+}
+
+/* History search */
+
+.history {
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.history-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  margin-bottom: 10px;
+}
+
+.history-head h2 {
+  margin: 0;
+  font: 400 12px/1 var(--font-display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.history-summary {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.history-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.history-filter input {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.history-indexing,
+.history-hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 10px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hist-row {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ended);
+  border-radius: 3px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.hist-row:hover {
+  background: var(--surface-hover);
+}
+
+.hist-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.hist-title {
+  flex: 1 1 280px;
+  min-width: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.hist-meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.hist-snippet {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.hist-sub {
+  margin-top: 6px;
+  padding-left: 10px;
+  border-left: 2px solid var(--border);
+}
+
+.hist-sub-label {
+  font-size: 12px;
+  color: var(--fg);
+}
+
+.hist-sub-arrow {
+  margin-right: 6px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+body[data-appearance='vscode'] .hist-sub-arrow {
+  color: var(--link);
+}
+
+.hist-sub-type {
+  color: var(--muted);
+}
+
+.hist-more {
+  margin-top: 6px;
+}
+
+.history-expand {
+  margin-top: 12px;
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-expand:hover {
+  background: var(--surface-hover);
+}
+
+.history-loading {
+  padding: 12px 0;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 /* Kanban */

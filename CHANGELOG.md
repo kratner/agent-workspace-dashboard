@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0 (2026-10-23)
+
+- **History search.** A **History** toggle next to the search box also searches every past Claude Code session on the machine.
+  - It matches each session's title, folder and every prompt you typed, but not Claude's replies or tool output.
+  - Matching past sessions appear in a **From history** section below the current ones, newest first, with the matching line. Click to resume, or **Copy resume**.
+- **Subagents:** matches inside subagent transcripts appear under their parent session.
+  - Each shows "↳ Found in subagent: *description*" and the matching line. "+N more subagents" expands the rest, and nested subagents are labelled.
+  - **Include subagents** turns them off.
+- **Large result sets:** up to 150 matches all show. Above that you get the 25 most recent and **Show all N results**, after which the rest load as you scroll. The new setting `agentWorkspace.historyResultThreshold` (100–200, default 150) moves the cut-off.
+- **The index:** built in the background on first use, read incrementally afterwards, and cached in the extension's storage.
+  - On a 1.09 GB history of 86 transcripts, the first build took 1.4 s and a cached start 17 ms.
+- `npm test` runs the new history tests.
+
 ## 0.3.0 (2026-10-23)
 
 - **Search.** A search box in the header filters the Kanban and List views as you type.

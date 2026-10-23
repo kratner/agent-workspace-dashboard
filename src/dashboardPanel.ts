@@ -1,18 +1,20 @@
 import * as vscode from 'vscode';
+import type { HistoryService } from './history/historyService';
 import { log } from './log';
-import type { Appearance, HostMessage, WebviewMessage } from './shared/types';
+import type { AgentSession, Appearance, HistoryRef, HostMessage, WebviewMessage } from './shared/types';
 import type { SessionStore } from './sessionStore';
 
 export const VIEW_TYPE = 'agentWorkspace.dashboard';
 const ACTIVE_VIEW_KEY = 'agentWorkspace.activeView';
 const DEFAULT_VIEW = 'kanban';
+const HISTORY_SOURCE = 'claude-code';
 
 /** The single dashboard tab. The webview owns the list of views; the host only stores which one is active. */
 export class DashboardPanel implements vscode.Disposable {
   private static current?: DashboardPanel;
   private readonly disposables: vscode.Disposable[] = [];
 
-  static show(context: vscode.ExtensionContext, store: SessionStore): void {
+  static show(context: vscode.ExtensionContext, store: SessionStore, history: HistoryService): void {
     if (DashboardPanel.current) {
       DashboardPanel.current.panel.reveal();
       return;
@@ -21,20 +23,21 @@ export class DashboardPanel implements vscode.Disposable {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'dist')],
     });
-    DashboardPanel.current = new DashboardPanel(panel, context, store);
+    DashboardPanel.current = new DashboardPanel(panel, context, store, history);
   }
 
   /** Re-attach to a tab VS Code restored after a restart. */
-  static revive(panel: vscode.WebviewPanel, context: vscode.ExtensionContext, store: SessionStore): void {
+  static revive(panel: vscode.WebviewPanel, context: vscode.ExtensionContext, store: SessionStore, history: HistoryService): void {
     panel.webview.options = { enableScripts: true, localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'dist')] };
     DashboardPanel.current?.dispose();
-    DashboardPanel.current = new DashboardPanel(panel, context, store);
+    DashboardPanel.current = new DashboardPanel(panel, context, store, history);
   }
 
   private constructor(
     private readonly panel: vscode.WebviewPanel,
     private readonly context: vscode.ExtensionContext,
     private readonly store: SessionStore,
+    private readonly history: HistoryService,
   ) {
     panel.iconPath = vscode.Uri.joinPath(context.extensionUri, 'media', 'icon.png');
     // Listen before setting the HTML, so the webview's first message can't arrive unheard.
@@ -43,8 +46,9 @@ export class DashboardPanel implements vscode.Disposable {
         this.handle(m).catch((err) => log.error(`handling "${m?.type}" from the webview failed`, err)),
       ),
       store.onDidChange(() => this.post()),
+      history.onStatus((status) => this.send({ type: 'historyStatus', status })),
       vscode.workspace.onDidChangeConfiguration((e) => {
-        if (e.affectsConfiguration('agentWorkspace.appearance')) this.post();
+        if (e.affectsConfiguration('agentWorkspace.appearance') || e.affectsConfiguration('agentWorkspace.historyResultThreshold')) this.post();
       }),
       panel.onDidDispose(() => this.dispose()),
     );
@@ -53,7 +57,7 @@ export class DashboardPanel implements vscode.Disposable {
   }
 
   private async handle(message: WebviewMessage): Promise<void> {
-    if (message.type !== 'log') log.info(`webview -> ${message.type}`);
+    if (message.type !== 'log' && message.type !== 'historySearch') log.info(`webview -> ${message.type}`);
     switch (message.type) {
       case 'log':
         log[message.level](`[webview] ${message.message}`);
@@ -75,28 +79,52 @@ export class DashboardPanel implements vscode.Disposable {
       }
       case 'copyResume': {
         const found = this.store.find(message.key);
-        const command = found?.source.resumeCommand?.(found.session);
-        if (command) {
-          await vscode.env.clipboard.writeText(command);
-          vscode.window.setStatusBarMessage('$(check) Resume command copied', 3000);
-        }
+        await this.copyResume(found?.source.resumeCommand?.(found.session));
+        break;
+      }
+      case 'historySearch': {
+        // Sessions already on the dashboard are shown there; history lists the rest.
+        const onDashboard = new Set(this.store.current.filter((s) => s.source === HISTORY_SOURCE).map((s) => s.id));
+        const result = this.history.query(message.query, message.includeSubagents, onDashboard, message.offset, message.limit);
+        this.send({ type: 'historyResults', requestId: message.requestId, offset: message.offset, ...result });
+        break;
+      }
+      case 'openHistory': {
+        const source = this.store.sources.find((s) => s.id === HISTORY_SOURCE);
+        if (source) await source.open(historySession(message.ref));
+        break;
+      }
+      case 'copyHistoryResume': {
+        const source = this.store.sources.find((s) => s.id === HISTORY_SOURCE);
+        await this.copyResume(source?.resumeCommand?.(historySession(message.ref)));
         break;
       }
     }
   }
 
+  private async copyResume(command: string | undefined): Promise<void> {
+    if (!command) return;
+    await vscode.env.clipboard.writeText(command);
+    vscode.window.setStatusBarMessage('$(check) Resume command copied', 3000);
+  }
+
   private post(): void {
-    // A hidden tab's webview is unloaded (no retainContextWhenHidden). It sends 'ready' when it
-    // comes back, and gets the current state then.
-    if (!this.panel.visible) return;
-    const message: HostMessage = {
+    const config = vscode.workspace.getConfiguration('agentWorkspace');
+    this.send({
       type: 'state',
       sessions: this.store.current,
       viewId: this.context.workspaceState.get<string>(ACTIVE_VIEW_KEY, DEFAULT_VIEW),
       sources: this.store.sources.map((s) => s.label),
-      appearance: vscode.workspace.getConfiguration('agentWorkspace').get<Appearance>('appearance', 'brand'),
-    };
-    this.panel.webview.postMessage(message).then(undefined, (err) => log.error('posting state to the webview failed', err));
+      appearance: config.get<Appearance>('appearance', 'brand'),
+      historyThreshold: config.get<number>('historyResultThreshold', 150),
+    });
+  }
+
+  private send(message: HostMessage): void {
+    // A hidden tab's webview is unloaded (no retainContextWhenHidden). It sends 'ready' when it
+    // comes back, and gets the current state then.
+    if (!this.panel.visible) return;
+    this.panel.webview.postMessage(message).then(undefined, (err) => log.error(`posting ${message.type} to the webview failed`, err));
   }
 
   private html(): string {
@@ -124,4 +152,18 @@ export class DashboardPanel implements vscode.Disposable {
     for (const d of this.disposables.splice(0)) d.dispose();
     this.panel.dispose();
   }
+}
+
+/** A history result as an ended session, so the Claude Code source can open or resume it. */
+function historySession(ref: HistoryRef): AgentSession {
+  return {
+    key: `${HISTORY_SOURCE}:${ref.sessionId}`,
+    source: HISTORY_SOURCE,
+    sourceLabel: 'Claude Code',
+    id: ref.sessionId,
+    title: ref.title,
+    cwd: ref.cwd,
+    state: 'ended',
+    updatedAt: ref.lastActivity,
+  };
 }

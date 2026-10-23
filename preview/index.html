@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Preview harness: loads the built webview (npm run build) with sample sessions, outside VS Code.
-     Open in a browser:  preview/index.html?appearance=brand|vscode&view=kanban|list&q=search+terms
+     Open in a browser:  preview/index.html?appearance=brand|vscode&view=kanban|list&q=search+terms&history=1&indexing=1
      The vscode appearance uses VS Code "Dark Modern" theme colors, since there's no real theme here. -->
 <html lang="en">
 <head>
@@ -52,8 +52,50 @@
       s('e1', 'ended', 'Fix flaky date tests', 'the date tests fail at midnight UTC', 'web', undefined, 5 * 60 * min),
       s('e2', 'ended', 'Upgrade dependencies', 'bump React and the test runner', 'web', undefined, 20 * 60 * min),
     ];
-    // ?q= seeds the search box, the way VS Code restores saved webview state.
-    var uiState = params.get('q') ? { query: params.get('q') } : undefined;
+    // Neutral sample history (what the host's HistoryIndex would return). "deploy" returns
+    // 340 matches, to show the short list and "Show all".
+    var day = 24 * 60 * min;
+    var past = [
+      { sessionId: 'h1', title: 'Add rate limiting to the API', cwd: '/Users/you/dev/api', lastActivity: now - 12 * day,
+        prompts: ['add rate limiting to the public api endpoints', 'use a sliding window, 100 requests per minute'], subagents: [] },
+      { sessionId: 'h2', title: 'Release prep', cwd: '/Users/you/dev/api', lastActivity: now - 20 * day,
+        prompts: ['get the 2.0 release ready'],
+        subagents: [
+          { agentId: 'a1', label: 'Check the changelog', agentType: 'Explore', depth: 1, text: 'scan the changelog for breaking changes since 1.9' },
+          { agentId: 'a2', label: 'Draft release notes', agentType: 'general-purpose', depth: 1, text: 'write release notes covering the breaking api changes' },
+          { agentId: 'a3', label: 'List deprecations', agentType: 'Explore', depth: 2, text: 'list deprecated endpoints that are breaking in 2.0' },
+        ] },
+      { sessionId: 'h3', title: 'Orders query is slow', cwd: '/Users/you/dev/api', lastActivity: now - 45 * day,
+        prompts: ['why is the orders query slow on the api', 'add an index on created_at'], subagents: [] },
+      { sessionId: 'h4', title: 'Fix flaky login test', cwd: '/Users/you/dev/web', lastActivity: now - 80 * day,
+        prompts: ['the login test fails one run in ten'], subagents: [] },
+    ];
+    function has(text, terms) { var t = text.toLowerCase(); return terms.every(function (x) { return t.indexOf(x) >= 0; }); }
+    function snippetOf(list, terms) { return list.filter(function (p) { return terms.some(function (x) { return p.toLowerCase().indexOf(x) >= 0; }); }).pop(); }
+    function historySearch(m) {
+      var terms = m.query.toLowerCase().split(/\s+/).filter(Boolean);
+      var hits = [];
+      if (terms.indexOf('deploy') >= 0) {
+        for (var i = 0; i < 340; i++) hits.push({ sessionId: 'd' + i, title: 'Deploy pipeline change #' + (340 - i), cwd: '/Users/you/dev/infra',
+          lastActivity: now - (i + 8) * day, promptSnippet: 'update the deploy step for the staging cluster', subagents: [] });
+      }
+      past.forEach(function (s) {
+        var parent = has([s.title, s.cwd].concat(s.prompts).join('\n'), terms);
+        var subs = m.includeSubagents ? s.subagents.filter(function (a) { return has(a.label + '\n' + a.text, terms); }) : [];
+        if (!parent && !subs.length) return;
+        hits.push({ sessionId: s.sessionId, title: s.title, cwd: s.cwd, lastActivity: s.lastActivity,
+          promptSnippet: parent ? snippetOf(s.prompts, terms) : undefined,
+          subagents: subs.map(function (a) { return { agentId: a.agentId, label: a.label, agentType: a.agentType, depth: a.depth, snippet: a.text }; }) });
+      });
+      hits.sort(function (a, b) { return b.lastActivity - a.lastActivity; });
+      var indexing = params.get('indexing') === '1';
+      return { type: 'historyResults', requestId: m.requestId, offset: m.offset, total: hits.length,
+        hits: hits.slice(m.offset, m.offset + m.limit),
+        status: indexing ? { indexed: 40, total: 86, done: false } : { indexed: 86, total: 86, done: true } };
+    }
+
+    // ?q= seeds the search box and ?history=1 turns History on, the way VS Code restores saved webview state.
+    var uiState = { query: params.get('q') || '', history: params.get('history') === '1' };
     window.acquireVsCodeApi = function () {
       return {
         getState: function () { return uiState; },
@@ -62,8 +104,10 @@
           if (m.type === 'ready') {
             window.postMessage({
               type: 'state', sessions: sessions, viewId: params.get('view') || 'kanban',
-              sources: ['Claude Code'], appearance: params.get('appearance') || 'brand',
+              sources: ['Claude Code'], appearance: params.get('appearance') || 'brand', historyThreshold: 150,
             }, '*');
+          } else if (m.type === 'historySearch') {
+            setTimeout(function () { window.postMessage(historySearch(m), '*'); }, 30);
           }
         },
       };
