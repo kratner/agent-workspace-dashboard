@@ -19,9 +19,49 @@ See every Claude Code session you have running, as a Kanban board or a list, and
 - **Click to open.** Clicking a card brings a session in this window to the front, or resumes an ended one. For a session running elsewhere, it tells you where.
 - **Resume ended sessions.** **Copy resume** puts the `claude --resume` command for that session on your clipboard.
 - **Two looks.** The KR brand (black and yellow) by default, or follow your VS Code color theme.
-- **Read-only and local.** It reads files Claude Code already writes on your machine. It never starts, stops or changes a session, and it sends nothing over the network. The history index is stored locally, in the extension's own storage.
+- **Easy to install and update.** One line installs it; after that it checks for new releases and updates itself on request.
+- **Read-only and local.** It reads files Claude Code already writes on your machine. It never starts, stops or changes a session, and none of your data leaves the machine. The history index is stored locally, in the extension's own storage. Its only network request is the daily update check, which asks GitHub for the latest release; you can turn it off.
 
 ![List view](media/screenshots/list-brand.png)
+
+## Install
+
+The extension isn't on the Visual Studio Marketplace yet, so it's installed from this repository's [Releases](https://github.com/kratner/agent-workspace-dashboard/releases). Run one line:
+
+**Windows** (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/kratner/agent-workspace-dashboard/main/scripts/install.ps1 | iex
+```
+
+**macOS / Linux**:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/kratner/agent-workspace-dashboard/main/scripts/install.sh | sh
+```
+
+Then run **Developer: Reload Window** in VS Code.
+
+The installer:
+
+1. downloads the latest release
+2. checks it against the SHA-256 checksum GitHub publishes
+3. installs it with VS Code's `code` command
+
+If `code` isn't on your PATH on macOS, run **Shell Command: Install 'code' command in PATH** in VS Code first.
+
+**Manual install:** download the `.vsix` from the [latest release](https://github.com/kratner/agent-workspace-dashboard/releases/latest), then run `code --install-extension <file>.vsix`. Or in VS Code: Extensions view → **…** menu → **Install from VSIX…**
+
+To build from source instead, see [DEVELOPMENT.md](DEVELOPMENT.md#install-from-source).
+
+## Updates
+
+- **Automatic check:** about once a day, the extension asks GitHub whether there's a newer release. If there is, a notification offers:
+  - **Update:** downloads it, verifies the checksum, installs it, and offers to reload the window.
+  - **Release Notes.**
+  - **Skip This Version.**
+- **Any time:** run **Agent Workspace: Check for Updates**, or run the install line again.
+- **To turn the automatic check off,** set `agentWorkspace.checkForUpdates` to `false`.
 
 ## Getting started
 
@@ -64,6 +104,7 @@ Click **History** next to the search box. While it's on, a **From history** sect
 | --- | --- |
 | **Agent Workspace: Open Dashboard** | Opens the dashboard in an editor tab, or brings it to the front |
 | **Agent Workspace: Refresh Sessions** | Re-reads session files immediately |
+| **Agent Workspace: Check for Updates** | Checks GitHub for a newer release and offers to install it |
 
 ## Settings
 
@@ -73,6 +114,7 @@ Click **History** next to the search box. While it's on, a **From history** sect
 | `agentWorkspace.endedWithinHours` | `24` | How far back to show ended sessions. `0` hides them. |
 | `agentWorkspace.showStatusBar` | `true` | Show the working and waiting counts in the status bar |
 | `agentWorkspace.historyResultThreshold` | `150` | History search: above this many matches (100–200), show the 25 most recent first, with a button to show all |
+| `agentWorkspace.checkForUpdates` | `true` | Check GitHub for a newer release about once a day and offer to install it |
 
 ![Following the VS Code theme](media/screenshots/kanban-vscode.png)
 
@@ -100,14 +142,11 @@ If you've set `CLAUDE_CONFIG_DIR`, the dashboard reads that folder instead of `~
 - **Sessions in other windows or terminals.** The dashboard can't switch to another VS Code window or a terminal. It tells you where the session is running instead.
 - **Claude Code only, for now.** Other agent systems such as Copilot or ChatGPT can be added as sources later; see [DEVELOPMENT.md](DEVELOPMENT.md).
 
-## Installation
-
-The extension isn't on the Visual Studio Marketplace yet. To build it and install it from source, see [DEVELOPMENT.md](DEVELOPMENT.md#install-from-source).
-
 ## Release notes and roadmap
 
+- **Releases:** every version, with its `.vsix` and notes, is on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 - **What changed:** see [CHANGELOG.md](CHANGELOG.md).
-- **What's next:** see [ROADMAP.md](ROADMAP.md). The next milestone is searching your full session history.
+- **What's next:** see [ROADMAP.md](ROADMAP.md). The next milestone is publishing to the Visual Studio Marketplace.
 
 ## Author
 

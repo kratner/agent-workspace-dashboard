@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 (2026-10-23)
+
+- **Releases.** Every version is now published on the repository's [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases), with its `.vsix` and notes. GitHub Actions builds each release from its version tag.
+- **One-line install:** `irm …/install.ps1 | iex` on Windows, or `curl …/install.sh | sh` on macOS and Linux. It downloads the latest release, verifies its SHA-256 checksum and installs it. Running it again updates.
+- **Updates from inside VS Code.**
+  - About once a day the extension checks for a newer release, and offers **Update**, **Release Notes** or **Skip This Version**.
+  - **Update** downloads it, verifies the checksum, installs it and offers to reload.
+  - There's also a **Check for Updates** command, and the setting `agentWorkspace.checkForUpdates` turns the daily check off.
+
 ## 0.4.0 (2026-10-23)
 
 - **History search.** A **History** toggle next to the search box also searches every past Claude Code session on the machine.

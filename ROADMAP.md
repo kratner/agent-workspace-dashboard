@@ -8,6 +8,7 @@
 | 0.2.x | 2026-10-22 | KR brand appearance, extension page, diagnostics log |
 | 0.3.0 | 2026-10-23 | Search across the sessions on the dashboard |
 | 0.4.0 | 2026-10-23 | Search the full session history, including subagents |
+| 0.5.0 | 2026-10-23 | GitHub Releases built by Actions, one-line installers, in-extension update check |
 
 The "Waiting on you" column was confirmed working in real use on 2026-10-23. Claude Code's status files do report sessions waiting for approval, so no hook is needed.
 
@@ -20,6 +21,8 @@ Publish after a period of everyday use. The extension page is already prepared: 
 - [ ] Decide whether to launch with the **Preview** badge (`"preview": true`).
 - [ ] Test on macOS, then drop "tested on Windows so far" from the README.
 - [ ] Bump to 1.0.0, or publish as 0.x preview.
+- [ ] Retire the GitHub update check for Marketplace installs, since VS Code updates those itself: default `agentWorkspace.checkForUpdates` to off, or skip the check when the extension came from the Marketplace. Keep GitHub Releases as the download for anyone installing the `.vsix` by hand.
+- [ ] Optionally publish to [Open VSX](https://open-vsx.org) as well, for Cursor and VSCodium users.
 
 ## 0.4.0: search your full session history (shipped)
 

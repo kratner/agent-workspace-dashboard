@@ -5,6 +5,7 @@ import { HistoryService } from './history/historyService';
 import { initLog, log } from './log';
 import { SessionStore } from './sessionStore';
 import { ClaudeCodeSource, claudeConfigDir } from './sources/claudeCode';
+import { registerUpdater } from './update/updater';
 import type { AgentSession } from './shared/types';
 
 const HOUR_MS = 3_600_000;
@@ -44,6 +45,7 @@ export function activate(context: vscode.ExtensionContext): void {
     store,
     history,
     statusItem,
+    ...registerUpdater(context),
     store.onDidChange(updateStatus),
     vscode.commands.registerCommand('agentWorkspace.openDashboard', () => DashboardPanel.show(context, store, history)),
     vscode.commands.registerCommand('agentWorkspace.refresh', () => store.refresh()),

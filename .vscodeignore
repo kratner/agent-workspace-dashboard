@@ -12,3 +12,5 @@ media/screenshots/**
 test/**
 out-test/**
 ROADMAP.md
+.github/**
+scripts/**

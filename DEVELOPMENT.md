@@ -1,6 +1,8 @@
 # Development
 
-How to build, install and extend the Agent Workspace Dashboard. The steps are the same on Windows and macOS.
+How to build, release and extend the Agent Workspace Dashboard. The steps are the same on Windows and macOS.
+
+To *use* the extension, install it from Releases with the one-line installer in the [README](README.md#install). This page is for building it yourself.
 
 ## Install from source
 
@@ -20,7 +22,7 @@ git clone https://github.com/kratner/agent-workspace-dashboard.git
 cd agent-workspace-dashboard
 npm install
 npm run package
-code --install-extension agent-workspace-dashboard-0.4.0.vsix
+code --install-extension agent-workspace-dashboard-0.5.0.vsix --force
 ```
 
 `npm run package` type-checks the code, builds it and writes the `.vsix` file. Use the file name it prints; the version number changes with each release.
@@ -43,6 +45,30 @@ Then reload the window.
 ```sh
 code --uninstall-extension kratner.agent-workspace-dashboard
 ```
+
+## Releasing
+
+Releases are built by GitHub Actions (`.github/workflows/release.yml`), not on a local machine:
+
+1. Bump `"version"` in `package.json`.
+2. Add a `## <version> (<date>)` section at the top of `CHANGELOG.md`.
+3. Commit and push to `main`.
+4. Run `npm run release`.
+
+`npm run release` (`scripts/release.mjs`) makes these checks, and only then tags `v<version>` and pushes the tag:
+
+- the working tree is clean
+- you're on `main`, in sync with `origin`
+- the tag doesn't exist yet
+- the changelog has the section
+- the tests pass
+
+The tag starts the Release workflow. It checks that the tag matches `package.json`, runs `npm ci`, `npm test` and `npm run package`, then creates the GitHub release:
+
+- **Attached:** the `.vsix`. GitHub publishes a SHA-256 for it.
+- **Notes:** the version's changelog section, plus install and update instructions (`scripts/changelog-section.mjs`).
+
+Installed copies pick it up through their daily update check (`src/update/`), and `scripts/install.ps1` / `install.sh` install it fresh. Both the installers and the update check verify the SHA-256 before installing.
 
 ### Troubleshooting
 
@@ -94,6 +120,8 @@ The README screenshots in `media/screenshots/` are taken from this page.
 | `src/sources/claudeTranscripts.ts` | Reads titles and last prompts from transcripts; after the first read it only reads what was appended |
 | `src/dashboardPanel.ts` | The webview tab; stores the active view in `workspaceState`; answers history searches |
 | `src/history/historyIndex.ts` | History search index over every transcript and subagent transcript. Typed prompts only, incremental reads, cached to disk. No `vscode` imports, so it's unit-testable |
+| `src/update/` | Update check against GitHub Releases: `releaseClient.ts` (no `vscode` imports; version compare, download, SHA-256) and `updater.ts` (daily check, notification, install) |
+| `scripts/` | `install.ps1` / `install.sh` (one-line installers), `release.mjs`, `changelog-section.mjs` |
 | `src/history/historyService.ts` | VS Code glue around the index: background refresh, throttled progress, paged queries |
 | `src/webview/` | React UI: `ViewManager`, `KanbanView`, `ListView`, `HistoryPanel`, `viewRegistry.ts` |
 | `test/` | `node:test` unit tests, bundled with esbuild by `test/run.mjs` |
