@@ -30,11 +30,18 @@ export function SessionCard({ session, now, terms, onOpen, onCopyResume }: Props
       <div className="card-title">
         <Highlight text={session.title} terms={terms} />
       </div>
+      {session.state === 'waiting' && session.waitingFor ? (
+        <div className="card-waiting">
+          Waiting for: <Highlight text={session.waitingFor} terms={terms} />
+        </div>
+      ) : null}
       {session.lastPrompt ? (
         <div className="card-prompt">
           <Highlight text={session.lastPrompt} terms={terms} />
         </div>
-      ) : null}
+      ) : (
+        <div className="card-prompt no-prompt">No prompts yet</div>
+      )}
       <div className="card-meta">
         <span className="folder">
           <Highlight text={folderName(session.cwd)} terms={terms} />

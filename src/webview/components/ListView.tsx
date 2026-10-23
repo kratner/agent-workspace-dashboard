@@ -19,9 +19,10 @@ export function ListView({ sessions, now, terms, onOpen, onCopyResume }: ViewPro
         {sessions.map((s) => (
           <tr key={s.key} className={`state-${s.state}`} tabIndex={0} onClick={() => onOpen(s)} onKeyDown={(e) => e.key === 'Enter' && onOpen(s)}>
             <td>
-              <span className="state-cell">
+              <span className="state-cell" title={s.waitingFor ? `Waiting for: ${s.waitingFor}` : undefined}>
                 <span className="dot" />
                 {stateLabel(s.state)}
+                {s.state === 'waiting' && s.waitingFor ? <span className="state-reason">· {s.waitingFor}</span> : null}
               </span>
             </td>
             <td className="title-cell" title={s.lastPrompt}>

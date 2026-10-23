@@ -43,8 +43,13 @@
       };
     }
     // Neutral sample data: these show up in the README screenshots.
+    var waitingApi = s('a1', 'waiting', 'Database migration', 'run the migration against staging once the backup finishes', 'api', 'VS Code', 1 * min);
+    waitingApi.waitingFor = 'permission prompt';
+    var waitingNew = s('a2', 'waiting', 'web-3f', undefined, 'web', 'Terminal', 3 * min);
+    waitingNew.waitingFor = 'dialog open';
     var sessions = [
-      s('a1', 'waiting', 'Database migration', 'run the migration against staging once the backup finishes', 'api', 'VS Code', 1 * min),
+      waitingApi,
+      waitingNew,
       s('b1', 'busy', 'Refactor auth middleware', 'split token refresh out of the request handler', 'api', 'VS Code', 0),
       s('b2', 'busy', 'API reference docs', 'document the sessions endpoints with examples', 'docs', 'Terminal', 3 * min),
       s('i1', 'idle', 'Landing page copy', 'tighten the hero section and the pricing table', 'web', 'VS Code', 42 * min),

@@ -5,7 +5,9 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import type { AgentSession, SessionState } from '../shared/types';
 import type { SessionSource } from './SessionSource';
+import { log } from '../log';
 import { TranscriptIndex, type TranscriptDetails, type TranscriptFile } from './claudeTranscripts';
+import { ancestors, sameStart, startTimes } from './processInfo';
 
 // Each running Claude Code process writes <config>/sessions/<pid>.json with its session id,
 // folder, entrypoint and a status word ("busy", "idle", ...). That file is internal to Claude
@@ -23,6 +25,10 @@ interface SessionFile {
   status?: string;
   updatedAt?: number;
   statusUpdatedAt?: number;
+  /** Why a waiting session is waiting, e.g. "permission prompt" or "dialog open". */
+  waitingFor?: string;
+  /** The process's start time (Windows FILETIME), to tell a reused PID from the real process. */
+  procStart?: string;
 }
 
 const POLL_MS = 5000;
@@ -43,6 +49,8 @@ export class ClaudeCodeSource implements SessionSource {
   private readonly transcripts: TranscriptIndex;
   private watcher?: fs.FSWatcher;
   private readonly timer: NodeJS.Timeout;
+  /** `${pid}:${procStart}` -> whether that PID is still the process that wrote the file. */
+  private readonly verified = new Map<string, boolean>();
 
   constructor(
     private readonly endedWithinMs: () => number,
@@ -72,10 +80,12 @@ export class ClaudeCodeSource implements SessionSource {
     if (!this.watcher) this.watch();
     const [files, transcripts] = await Promise.all([this.readSessionFiles(), this.transcripts.scan()]);
 
+    const isRunning = await this.liveness(files);
+
     // A session id can appear in more than one file (e.g. resumed twice); keep the live one.
     const live = new Map<string, { file: SessionFile; alive: boolean }>();
     for (const file of files) {
-      const alive = isAlive(file.pid);
+      const alive = isRunning(file);
       const prev = live.get(file.sessionId);
       if (!prev || (alive && !prev.alive) || (alive === prev.alive && (file.updatedAt ?? 0) > (prev.file.updatedAt ?? 0))) {
         live.set(file.sessionId, { file, alive });
@@ -108,6 +118,7 @@ export class ClaudeCodeSource implements SessionSource {
         cwd: file.cwd ?? d?.cwd,
         state: alive ? mapStatus(file.status) : 'ended',
         rawStatus: file.status,
+        waitingFor: alive && file.waitingFor ? file.waitingFor : undefined,
         surface: surfaceOf(file),
         pid: alive ? file.pid : undefined,
         startedAt: file.startedAt,
@@ -120,6 +131,37 @@ export class ClaudeCodeSource implements SessionSource {
       sessions.push({ ...this.base(t.sessionId, d), cwd: d?.cwd, state: 'ended', updatedAt: t.mtime });
     }
     return sessions;
+  }
+
+  /**
+   * Which session files belong to a process that's still running. A PID that exists isn't
+   * enough on Windows, which recycles PIDs: the PID must also have the start time recorded in
+   * the file. Each PID/start pair is checked once and cached; the cache entry is dropped when
+   * the PID disappears.
+   */
+  private async liveness(files: SessionFile[]): Promise<(file: SessionFile) => boolean> {
+    const exists = new Map(files.map((f) => [f.pid, isAlive(f.pid)]));
+    for (const key of this.verified.keys()) {
+      if (!exists.get(Number(key.split(':')[0]))) this.verified.delete(key);
+    }
+    const keyOf = (f: SessionFile) => `${f.pid}:${f.procStart}`;
+    const unchecked = files.filter((f) => f.procStart && exists.get(f.pid) && !this.verified.has(keyOf(f)));
+    if (unchecked.length) {
+      try {
+        const actual = await startTimes([...new Set(unchecked.map((f) => f.pid))]);
+        for (const f of unchecked) {
+          const start = actual.get(f.pid);
+          // No answer (non-Windows, or the query failed for that PID): fall back to "exists".
+          const same = start === undefined ? true : sameStart(start, f.procStart!);
+          this.verified.set(keyOf(f), same);
+          if (!same) log.info(`session ${f.sessionId}: PID ${f.pid} now belongs to another process; treating it as ended`);
+        }
+      } catch (err) {
+        log.error('could not read process start times; trusting PIDs as they are', err);
+        for (const f of unchecked) this.verified.set(keyOf(f), true);
+      }
+    }
+    return (f) => !!exists.get(f.pid) && (!f.procStart || this.verified.get(keyOf(f)) !== false);
   }
 
   private base(sessionId: string, d: TranscriptDetails | undefined, name?: string) {
@@ -168,10 +210,22 @@ export class ClaudeCodeSource implements SessionSource {
       return;
     }
 
+    // A CLI session in one of this window's terminals: bring that terminal to the front.
+    if (live && session.surface === 'Terminal' && session.pid) {
+      const terminal = await findTerminal(session.pid);
+      if (terminal) {
+        terminal.show();
+        return;
+      }
+    }
+
     const where = session.cwd ? ` in ${session.cwd}` : '';
-    const message = live
-      ? `"${session.title}" is running in ${session.surface ?? 'another process'}${where}.`
-      : `"${session.title}" ended. Resume it from its folder${where}.`;
+    const waiting = session.waitingFor ? ` It's waiting for: ${session.waitingFor}.` : '';
+    const message = !live
+      ? `"${session.title}" ended. Resume it from its folder${where}.`
+      : session.surface === 'Terminal'
+        ? `"${session.title}" is running in a terminal outside this VS Code window (process ${session.pid})${where}.${waiting}`
+        : `"${session.title}" is running in ${session.surface ?? 'another process'}${where}.${waiting}`;
     const actions = session.cwd ? ['Open Folder'] : [];
     if (!live) actions.push('Copy Resume Command');
     const choice = await vscode.window.showInformationMessage(message, ...actions);
@@ -207,6 +261,22 @@ function surfaceOf(file: SessionFile): string | undefined {
   if (file.entrypoint === 'claude-vscode') return 'VS Code';
   if (file.entrypoint === 'cli') return 'Terminal';
   return file.entrypoint;
+}
+
+/** The terminal in this window whose shell is an ancestor of `pid`, if any. */
+async function findTerminal(pid: number): Promise<vscode.Terminal | undefined> {
+  let chain: number[];
+  try {
+    chain = [pid, ...(await ancestors(pid))];
+  } catch (err) {
+    log.error(`could not look up the parents of process ${pid}`, err);
+    return undefined;
+  }
+  for (const terminal of vscode.window.terminals) {
+    const shellPid = await terminal.processId;
+    if (shellPid && chain.includes(shellPid)) return terminal;
+  }
+  return undefined;
 }
 
 function isAlive(pid: number): boolean {

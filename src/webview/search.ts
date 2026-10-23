@@ -10,7 +10,7 @@ export function searchTerms(query: string): string[] {
 }
 
 function searchableText(s: AgentSession): string {
-  return [s.title, s.lastPrompt, s.cwd, s.surface, s.sourceLabel, stateLabel(s.state), s.state, s.rawStatus]
+  return [s.title, s.lastPrompt, s.cwd, s.surface, s.sourceLabel, stateLabel(s.state), s.state, s.rawStatus, s.waitingFor]
     .filter(Boolean)
     .join('\n')
     .toLowerCase();

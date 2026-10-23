@@ -16,6 +16,8 @@ export interface AgentSession {
   state: SessionState;
   /** The source's status word before mapping, shown when it isn't one we recognise. */
   rawStatus?: string;
+  /** For a waiting session, what it's waiting for, e.g. "permission prompt" or "dialog open". */
+  waitingFor?: string;
   /** Where the session runs: 'VS Code', 'Terminal', 'Background'. */
   surface?: string;
   pid?: number;

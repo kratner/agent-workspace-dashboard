@@ -551,6 +551,27 @@ body[data-appearance='brand'] .card.state-waiting {
   overflow-wrap: anywhere;
 }
 
+.card-waiting {
+  margin-top: 4px;
+  color: var(--waiting);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+body[data-appearance='vscode'] .card-waiting {
+  color: var(--fg);
+}
+
+.no-prompt {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.state-reason {
+  color: var(--muted);
+  font-size: 11px;
+}
+
 .card-meta {
   display: flex;
   flex-wrap: wrap;

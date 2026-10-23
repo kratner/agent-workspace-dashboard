@@ -2,6 +2,15 @@
 
 Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 
+## 0.5.1 (2026-10-23)
+
+Waiting cards now say what the session is waiting for, and clicking a session running in a terminal takes you to that terminal. Sessions can no longer look alive just because Windows gave their old process ID to another program.
+
+- **What a session is waiting for.** Waiting cards and list rows show Claude Code's reason, such as "Waiting for: permission prompt" or "Waiting for: dialog open". The reason is searchable too.
+- **"No prompts yet"** on sessions that have been opened but never used. They used to show only a placeholder name like `my-project-3f`.
+- **Clicking a terminal session goes to its terminal.** For a Claude Code CLI session running in one of the window's terminals, clicking the card brings that terminal to the front. For a session in a terminal outside VS Code, the message says so and gives its process ID.
+- **Reused process IDs are caught.** Windows recycles process IDs, so an old session file could point at an unrelated program and keep a long-finished session on the board. The dashboard now compares each process's start time with the one Claude Code recorded. A mismatch counts as ended. Each process ID is checked once.
+
 ## 0.5.0 (2026-10-23)
 
 Install the extension with one line, and get new versions without leaving VS Code. Every version is now published on the Releases page, built by GitHub Actions.
