@@ -88,9 +88,10 @@ If you've set `CLAUDE_CONFIG_DIR`, the dashboard reads that folder instead of `~
 
 The extension isn't on the Visual Studio Marketplace yet. To build it and install it from source, see [DEVELOPMENT.md](DEVELOPMENT.md#install-from-source).
 
-## Release notes
+## Release notes and roadmap
 
-See [CHANGELOG.md](CHANGELOG.md).
+- **What changed:** see [CHANGELOG.md](CHANGELOG.md).
+- **What's next:** see [ROADMAP.md](ROADMAP.md). The next milestone is searching your full session history.
 
 ## Author
 
