@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # All tags, so the notes can link a comparison with the previous release.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -36,7 +39,7 @@ jobs:
       - run: npm run package
 
       - name: Release notes from CHANGELOG.md
-        run: node scripts/changelog-section.mjs "${GITHUB_REF_NAME#v}" > release-notes.md
+        run: node scripts/release-notes.mjs "${GITHUB_REF_NAME#v}" > release-notes.md
 
       - name: Create the GitHub release
         env:

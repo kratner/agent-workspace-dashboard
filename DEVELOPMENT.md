@@ -51,7 +51,7 @@ code --uninstall-extension kratner.agent-workspace-dashboard
 Releases are built by GitHub Actions (`.github/workflows/release.yml`), not on a local machine:
 
 1. Bump `"version"` in `package.json`.
-2. Add a `## <version> (<date>)` section at the top of `CHANGELOG.md`.
+2. Add a `## <version> (<date>)` section at the top of `CHANGELOG.md`. That section becomes the release notes (see [Writing the changelog entry](#writing-the-changelog-entry) below).
 3. Commit and push to `main`.
 4. Run `npm run release`.
 
@@ -66,9 +66,49 @@ Releases are built by GitHub Actions (`.github/workflows/release.yml`), not on a
 The tag starts the Release workflow. It checks that the tag matches `package.json`, runs `npm ci`, `npm test` and `npm run package`, then creates the GitHub release:
 
 - **Attached:** the `.vsix`. GitHub publishes a SHA-256 for it.
-- **Notes:** the version's changelog section, plus install and update instructions (`scripts/changelog-section.mjs`).
+- **Notes:** built from the changelog by `scripts/release-notes.mjs`. `npm run release` prints a preview before it tags.
 
 Installed copies pick it up through their daily update check (`src/update/`), and `scripts/install.ps1` / `install.sh` install it fresh. Both the installers and the update check verify the SHA-256 before installing.
+
+### Writing the changelog entry
+
+Each version's `CHANGELOG.md` section is written in this order:
+
+```markdown
+## 0.6.0 (2026-11-02)
+
+One or two sentences: what this release lets you do, for someone deciding whether to update.
+
+![Optional screenshot](https://raw.githubusercontent.com/kratner/agent-workspace-dashboard/v0.6.0/media/screenshots/<file>.png)
+
+- **The details**, one bullet per change.
+
+### Upgrading
+
+Anything a user has to do or know after updating. Leave this section out if there's nothing.
+```
+
+`scripts/release-notes.mjs` turns that into the release page:
+
+1. the summary
+2. "Released \<date\>"
+3. the screenshot
+4. **What's changed**
+5. any `###` sections, such as Upgrading
+6. a **Full changelog** link comparing with the previous released version
+7. install and update instructions
+
+Pin screenshot URLs to the version's tag (`/v0.6.0/` rather than `/main/`), so an old release never shows a newer UI.
+
+### Releasing an older commit by hand
+
+Backfilled releases don't run the workflow, because the commits predate it. For each one:
+
+1. Build the `.vsix` from a `git worktree` at that commit.
+2. Generate the notes with `node scripts/release-notes.mjs <version>`.
+3. Create the release with `gh release create v<version> <vsix> --target <full sha> --latest=false --notes-file <notes>`.
+
+v0.1.0 through v0.4.0 were released this way.
 
 ### Troubleshooting
 
@@ -121,7 +161,7 @@ The README screenshots in `media/screenshots/` are taken from this page.
 | `src/dashboardPanel.ts` | The webview tab; stores the active view in `workspaceState`; answers history searches |
 | `src/history/historyIndex.ts` | History search index over every transcript and subagent transcript. Typed prompts only, incremental reads, cached to disk. No `vscode` imports, so it's unit-testable |
 | `src/update/` | Update check against GitHub Releases: `releaseClient.ts` (no `vscode` imports; version compare, download, SHA-256) and `updater.ts` (daily check, notification, install) |
-| `scripts/` | `install.ps1` / `install.sh` (one-line installers), `release.mjs`, `changelog-section.mjs` |
+| `scripts/` | `install.ps1` / `install.sh` (one-line installers), `release.mjs`, `release-notes.mjs` (CHANGELOG → release notes) |
 | `src/history/historyService.ts` | VS Code glue around the index: background refresh, throttled progress, paged queries |
 | `src/webview/` | React UI: `ViewManager`, `KanbanView`, `ListView`, `HistoryPanel`, `viewRegistry.ts` |
 | `test/` | `node:test` unit tests, bundled with esbuild by `test/run.mjs` |

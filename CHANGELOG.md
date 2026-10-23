@@ -1,15 +1,28 @@
 # Changelog
 
+Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
+
 ## 0.5.0 (2026-10-23)
 
-- **Releases.** Every version is now published on the repository's [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases), with its `.vsix` and notes. GitHub Actions builds each release from its version tag.
+Install the extension with one line, and get new versions without leaving VS Code. Every version is now published on the Releases page, built by GitHub Actions.
+
+- **Releases.** Each version is published on the repository's [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases), with its `.vsix` and notes. GitHub Actions builds each release from its version tag.
 - **One-line install:** `irm …/install.ps1 | iex` on Windows, or `curl …/install.sh | sh` on macOS and Linux. It downloads the latest release, verifies its SHA-256 checksum and installs it. Running it again updates.
 - **Updates from inside VS Code.**
   - About once a day the extension checks for a newer release, and offers **Update**, **Release Notes** or **Skip This Version**.
   - **Update** downloads it, verifies the checksum, installs it and offers to reload.
   - There's also a **Check for Updates** command, and the setting `agentWorkspace.checkForUpdates` turns the daily check off.
 
+### Upgrading
+
+- This is the last version you need to install by hand. From here, the extension tells you when a new version is out and installs it for you.
+- The daily check is the extension's only network request: it asks GitHub for the latest release. To opt out, set `agentWorkspace.checkForUpdates` to `false`.
+
 ## 0.4.0 (2026-10-23)
+
+Find any past Claude Code session, not just the ones on the board. Switch on **History** and search every session on the machine, including work done by subagents, then resume it with a click.
+
+![History search: past sessions below the current ones, with a match found inside a subagent](https://raw.githubusercontent.com/kratner/agent-workspace-dashboard/v0.4.0/media/screenshots/history-brand.png)
 
 - **History search.** A **History** toggle next to the search box also searches every past Claude Code session on the machine.
   - It matches each session's title, folder and every prompt you typed, but not Claude's replies or tool output.
@@ -22,7 +35,15 @@
   - On a 1.09 GB history of 86 transcripts, the first build took 1.4 s and a cached start 17 ms.
 - `npm test` runs the new history tests.
 
+### Upgrading
+
+The first time you search with History on, the extension builds its index. You'll see "Indexing history… n of m" for a second or two, and after that it's instant.
+
 ## 0.3.0 (2026-10-23)
+
+Search the dashboard. Type in the header to filter either view by title, prompt, folder, where a session runs or its state, with matches highlighted.
+
+![Searching for "api": matching sessions with the term highlighted](https://raw.githubusercontent.com/kratner/agent-workspace-dashboard/v0.3.0/media/screenshots/search-brand.png)
 
 - **Search.** A search box in the header filters the Kanban and List views as you type.
   - It matches title, last prompt, folder, where the session runs and state.
@@ -34,28 +55,40 @@
 
 ## 0.2.2 (2026-10-22)
 
-- The images on the extension's Details page now link to the GitHub repository, because VS Code doesn't load relative image paths there. They display once the repository is public.
+Fixes for the extension page and the dashboard log, and the repository is now public under the MIT license.
+
+- The images on the extension's Details page now link to the GitHub repository, because VS Code doesn't load relative image paths there.
 - The dashboard no longer sends updates while its tab is hidden. It gets fresh state when you return to it, so the log no longer fills with "not delivered" errors.
+- Licensed under MIT.
 
 ## 0.2.1 (2026-10-22)
 
-- New **Agent Workspace** log in the Output panel. It records the dashboard's startup, the messages between the extension and the dashboard, and any error, including errors inside the dashboard itself.
-- The dashboard now starts listening for messages before it loads.
+The dashboard gets the KR look (black panel, yellow for sessions waiting on you, Archivo type), plus a log for troubleshooting. The editor-theme look is still available as a setting.
 
-## 0.2.0 (2026-10-22)
+![The KR brand appearance: the Kanban board in black and yellow](https://raw.githubusercontent.com/kratner/agent-workspace-dashboard/v0.2.1/media/screenshots/kanban-brand.png)
 
-- KR brand appearance, now the default:
+- **KR brand appearance, now the default:**
   - black panel with the KR mark
   - Archivo Black headings
   - yellow reserved for sessions waiting on you
   - white, steel and iron for working, idle and ended
-- New setting `agentWorkspace.appearance`: `brand` or `vscode` (follow the color theme).
-- The extension icon and the dashboard tab icon use the KR colors.
-- Extension page: author, screenshots, features, commands and settings.
+- **New setting** `agentWorkspace.appearance`: `brand`, or `vscode` to follow your color theme.
+- **Icons:** the extension icon and the dashboard tab icon use the KR colors.
+- **Extension page:** author, screenshots, features, commands and settings.
+- **Agent Workspace log** in the Output panel. It records the dashboard's startup, the messages between the extension and the dashboard, and any error, including errors inside the dashboard itself.
+- **Fix:** the dashboard now starts listening for messages before it loads.
+
+0.2.0 was an internal build. Its changes (the brand appearance, the setting and the extension page) are included here.
+
+### Upgrading
+
+If you use a light color theme, set `agentWorkspace.appearance` to `vscode`. The brand yellow is hard to read on light backgrounds.
 
 ## 0.1.0 (2026-10-21)
 
-- First version: Kanban and List views of Claude Code sessions, grouped by state.
+The first version: every Claude Code session you have running, on a Kanban board or in a list, grouped by state so you can spot the one that's waiting on you.
+
+- First version: Kanban and List views of Claude Code sessions, grouped by state (Waiting on you, Working, Idle, Ended).
 - Live updates from Claude Code's session files, with a status bar count of working and waiting sessions.
 - Click a card to open or resume its session; **Copy resume** for ended sessions.
 - The active view is remembered per workspace.

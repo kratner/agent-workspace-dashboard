@@ -20,8 +20,9 @@ git('fetch', '--quiet', '--tags', 'origin');
 if (git('rev-parse', 'HEAD') !== git('rev-parse', 'origin/main')) fail('main is not in sync with origin/main. Push or pull first.');
 if (git('tag', '--list', tag)) fail(`${tag} already exists. Bump "version" in package.json.`);
 
-const notes = spawnSync(process.execPath, ['scripts/changelog-section.mjs', version], { encoding: 'utf8' });
-if (notes.status !== 0) fail(`CHANGELOG.md needs a "## ${version} (date)" section describing this release.`);
+const notes = spawnSync(process.execPath, ['scripts/release-notes.mjs', version], { encoding: 'utf8' });
+if (notes.status !== 0) fail(`CHANGELOG.md needs a "## ${version} (date)" section: a summary paragraph, then the changes.`);
+console.log(`\nRelease notes preview:\n${'-'.repeat(60)}\n${notes.stdout.split('\n---\n')[0].trim()}\n${'-'.repeat(60)}`);
 
 console.log('Running tests…');
 // One command string: npm is npm.cmd on Windows, so it needs a shell, and passing an args array
