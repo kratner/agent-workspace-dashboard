@@ -24,7 +24,9 @@ const notes = spawnSync(process.execPath, ['scripts/changelog-section.mjs', vers
 if (notes.status !== 0) fail(`CHANGELOG.md needs a "## ${version} (date)" section describing this release.`);
 
 console.log('Running tests…');
-const tests = spawnSync('npm', ['test'], { stdio: 'inherit', shell: true });
+// One command string: npm is npm.cmd on Windows, so it needs a shell, and passing an args array
+// with shell: true is deprecated.
+const tests = spawnSync('npm test', { stdio: 'inherit', shell: true });
 if (tests.status !== 0) fail('Tests failed.');
 
 git('tag', '-a', tag, '-m', tag);
