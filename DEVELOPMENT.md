@@ -20,7 +20,7 @@ git clone https://github.com/kratner/agent-workspace-dashboard.git
 cd agent-workspace-dashboard
 npm install
 npm run package
-code --install-extension agent-workspace-dashboard-0.2.2.vsix
+code --install-extension agent-workspace-dashboard-0.3.0.vsix
 ```
 
 `npm run package` type-checks the code, builds it and writes the `.vsix` file. Use the file name it prints; the version number changes with each release.

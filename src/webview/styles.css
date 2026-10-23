@@ -162,6 +162,63 @@ body[data-appearance='vscode'] .kr-glyph {
   border-bottom-color: var(--accent);
 }
 
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 200px;
+  max-width: 340px;
+  min-width: 160px;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  outline: none;
+}
+
+.search input::placeholder {
+  color: var(--muted);
+}
+
+.search input:focus {
+  border-color: var(--focus);
+}
+
+body[data-appearance='vscode'] .search input {
+  background: var(--vscode-input-background, var(--surface));
+  color: var(--vscode-input-foreground, var(--fg));
+  border-color: var(--vscode-input-border, var(--border));
+}
+
+.search-count {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+mark {
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+body[data-appearance='brand'] mark {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+body[data-appearance='vscode'] mark {
+  background: var(--vscode-editor-findMatchHighlightBackground, rgba(234, 92, 0, 0.33));
+  color: inherit;
+}
+
 .summary {
   display: flex;
   align-items: center;
@@ -178,7 +235,7 @@ body[data-appearance='vscode'] .kr-glyph {
   white-space: nowrap;
 }
 
-body[data-appearance='brand'] .pill.state-waiting {
+body[data-appearance='brand'] .pill.state-waiting.nonzero {
   background: var(--waiting);
   color: var(--on-accent);
   font-weight: 700;
@@ -208,6 +265,10 @@ body[data-appearance='brand'] .pill.state-waiting {
 
 .link-button:hover {
   text-decoration: underline;
+}
+
+.link-button.inline {
+  font-size: inherit;
 }
 
 .content {
@@ -381,6 +442,14 @@ body[data-appearance='brand'] .card.state-waiting {
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 700;
+}
+
+.row-prompt {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-weight: normal;
 }
 
 .list tr.state-ended .title-cell {

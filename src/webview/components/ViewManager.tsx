@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { AgentSession, DashboardState, HostMessage } from '../../shared/types';
+import { filterSessions, searchTerms } from '../search';
 import { VIEWS, findView } from '../viewRegistry';
 import { KrGlyph } from './KrGlyph';
-import { log, post } from '../vscodeApi';
+import { getUiState, log, post, setUiState } from '../vscodeApi';
 
 const TICK_MS = 15_000;
 
@@ -10,6 +11,8 @@ export function ViewManager() {
   const [state, setState] = useState<DashboardState>();
   const [viewId, setViewId] = useState<string>();
   const [now, setNow] = useState(Date.now());
+  const [query, setQuery] = useState(() => getUiState().query ?? '');
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let first = true;
@@ -34,10 +37,30 @@ export function ViewManager() {
     };
   }, []);
 
+  // "/" or Ctrl/Cmd+F jumps to search; the webview has no find widget of its own to collide with.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      const find = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f';
+      if (find || (e.key === '/' && !typing)) {
+        e.preventDefault();
+        searchRef.current?.focus();
+        searchRef.current?.select();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const appearance = state?.appearance ?? 'brand';
   useEffect(() => {
     document.body.dataset.appearance = appearance;
   }, [appearance]);
+
+  const updateQuery = (value: string) => {
+    setQuery(value);
+    setUiState({ query: value });
+  };
 
   const view = findView(viewId);
   const selectView = (id: string) => {
@@ -49,7 +72,10 @@ export function ViewManager() {
     onCopyResume: (s: AgentSession) => post({ type: 'copyResume', key: s.key }),
   };
 
-  const sessions = state?.sessions ?? [];
+  const allSessions = state?.sessions ?? [];
+  const terms = useMemo(() => searchTerms(query), [query]);
+  const sessions = useMemo(() => filterSessions(allSessions, terms), [allSessions, terms]);
+  const searching = terms.length > 0;
   const count = (st: AgentSession['state']) => sessions.filter((s) => s.state === st).length;
   const View = view.component;
 
@@ -73,10 +99,32 @@ export function ViewManager() {
             </button>
           ))}
         </div>
+        <div className="search">
+          <input
+            ref={searchRef}
+            type="search"
+            value={query}
+            placeholder="Search sessions  ( / )"
+            aria-label="Search sessions"
+            spellCheck={false}
+            onChange={(e) => updateQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                updateQuery('');
+                e.currentTarget.blur();
+              }
+            }}
+          />
+          {searching && state ? (
+            <span className="search-count" aria-live="polite">
+              {sessions.length} of {allSessions.length}
+            </span>
+          ) : null}
+        </div>
         <div className="summary">
           {state ? (
             <>
-              <span className="pill state-waiting">{count('waiting')} waiting</span>
+              <span className={count('waiting') ? 'pill state-waiting nonzero' : 'pill state-waiting'}>{count('waiting')} waiting</span>
               <span className="pill state-busy">{count('busy')} working</span>
               <span className="pill state-idle">{count('idle')} idle</span>
             </>
@@ -89,10 +137,17 @@ export function ViewManager() {
       <main className="content">
         {!state ? (
           <p className="placeholder">Loading sessions…</p>
-        ) : sessions.length === 0 ? (
+        ) : allSessions.length === 0 ? (
           <p className="placeholder">No {state.sources.join(' or ')} sessions are running or ended recently.</p>
+        ) : searching && sessions.length === 0 ? (
+          <p className="placeholder">
+            No sessions match “{query.trim()}”.{' '}
+            <button className="link-button inline" onClick={() => updateQuery('')}>
+              Clear search
+            </button>
+          </p>
         ) : (
-          <View sessions={sessions} now={now} {...actions} />
+          <View sessions={sessions} now={now} terms={terms} {...actions} />
         )}
       </main>
     </div>

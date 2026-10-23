@@ -7,6 +7,8 @@ export interface ViewProps {
   sessions: AgentSession[];
   /** Current time, ticked by the view manager so relative times stay fresh. */
   now: number;
+  /** Lower-cased search terms, for highlighting; the sessions are already filtered. */
+  terms: string[];
   onOpen(session: AgentSession): void;
   onCopyResume(session: AgentSession): void;
 }

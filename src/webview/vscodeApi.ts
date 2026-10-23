@@ -1,12 +1,29 @@
 import type { WebviewMessage } from '../shared/types';
 
-declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
+declare function acquireVsCodeApi(): {
+  postMessage(message: unknown): void;
+  getState(): unknown;
+  setState(state: unknown): void;
+};
 
 // acquireVsCodeApi may only be called once per webview.
 const api = acquireVsCodeApi();
 
 export function post(message: WebviewMessage): void {
   api.postMessage(message);
+}
+
+/** Per-tab UI state that survives VS Code unloading the hidden webview. */
+export interface WebviewUiState {
+  query?: string;
+}
+
+export function getUiState(): WebviewUiState {
+  return (api.getState() as WebviewUiState | undefined) ?? {};
+}
+
+export function setUiState(patch: WebviewUiState): void {
+  api.setState({ ...getUiState(), ...patch });
 }
 
 export function log(level: 'info' | 'error', message: string): void {

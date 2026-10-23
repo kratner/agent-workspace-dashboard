@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 (2026-10-23)
+
+- **Search.** A search box in the header filters the Kanban and List views as you type.
+  - It matches title, last prompt, folder, where the session runs and state.
+  - With several words, a session must contain all of them.
+  - Matches are highlighted, and the List view shows a matching prompt under the title.
+  - Press `/` or Ctrl+F (⌘F) to jump to the box, and Esc to clear it.
+  - The search is kept when you switch tabs.
+- The "waiting" count in the header is only filled yellow when something is waiting.
+
 ## 0.2.2 (2026-10-22)
 
 - The images on the extension's Details page now link to the GitHub repository, because VS Code doesn't load relative image paths there. They display once the repository is public.

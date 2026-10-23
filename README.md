@@ -12,6 +12,7 @@ See every Claude Code session you have running, as a Kanban board or a list, and
 
 - **Kanban and List views.** Sessions are grouped by state: Waiting on you, Working, Idle and Ended. Switch views in the header; the dashboard remembers your choice for each workspace.
 - **Know what needs you.** A session waiting for your reply or approval gets its own column, a highlighted card and a count in the status bar.
+- **Search.** Filter either view as you type, by title, prompt, folder, where it runs or state. Matches are highlighted.
 - **Live.** Cards move as sessions change state. You never need to refresh.
 - **Every session, wherever it runs.** It shows Claude Code panels in VS Code, the CLI in a terminal and background agents, across all your project folders.
 - **Click to open.** Clicking a card brings a session in this window to the front, or resumes an ended one. For a session running elsewhere, it tells you where.
@@ -28,6 +29,18 @@ See every Claude Code session you have running, as a Kanban board or a list, and
    - click the robot icon in the status bar, or
    - run **Agent Workspace: Open Dashboard** from the Command Palette.
 3. Start or continue a Claude Code session. Its card appears within a few seconds.
+
+## Searching
+
+Type in the search box in the header, or press `/` or Ctrl+F (⌘F on macOS) to jump to it. Both views filter as you type.
+
+- **What it searches:** each session's title, last prompt, folder path, where it runs (VS Code, Terminal, Background) and state (Waiting on you, Working, Idle, Ended). So `waiting` or `terminal` works as a query too.
+- **Several words:** a session must contain all of them. `api waiting` finds the waiting session in the `api` folder.
+- **Matches are highlighted.** In the List view, which has no prompt column, a prompt that matched appears under the title while you search.
+- **Your search stays** when you switch tabs and come back. Press Esc in the box to clear it.
+- **Scope:** search covers the sessions on the dashboard, meaning running ones plus those ended within `agentWorkspace.endedWithinHours`.
+
+![Searching for "api"](media/screenshots/search-brand.png)
 
 ## Commands
 

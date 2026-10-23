@@ -1,15 +1,17 @@
 import type { KeyboardEvent } from 'react';
 import type { AgentSession } from '../../shared/types';
 import { folderName, timeAgo } from '../format';
+import { Highlight } from './Highlight';
 
 interface Props {
   session: AgentSession;
   now: number;
+  terms: string[];
   onOpen(session: AgentSession): void;
   onCopyResume(session: AgentSession): void;
 }
 
-export function SessionCard({ session, now, onOpen, onCopyResume }: Props) {
+export function SessionCard({ session, now, terms, onOpen, onCopyResume }: Props) {
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -25,11 +27,23 @@ export function SessionCard({ session, now, onOpen, onCopyResume }: Props) {
       onClick={() => onOpen(session)}
       onKeyDown={onKeyDown}
     >
-      <div className="card-title">{session.title}</div>
-      {session.lastPrompt ? <div className="card-prompt">{session.lastPrompt}</div> : null}
+      <div className="card-title">
+        <Highlight text={session.title} terms={terms} />
+      </div>
+      {session.lastPrompt ? (
+        <div className="card-prompt">
+          <Highlight text={session.lastPrompt} terms={terms} />
+        </div>
+      ) : null}
       <div className="card-meta">
-        <span className="folder">{folderName(session.cwd)}</span>
-        {session.surface ? <span className="badge">{session.surface}</span> : null}
+        <span className="folder">
+          <Highlight text={folderName(session.cwd)} terms={terms} />
+        </span>
+        {session.surface ? (
+          <span className="badge">
+            <Highlight text={session.surface} terms={terms} />
+          </span>
+        ) : null}
         <span className="time">{timeAgo(session.updatedAt, now)}</span>
         {session.state === 'ended' ? (
           <button

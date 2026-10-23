@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Preview harness: loads the built webview (npm run build) with sample sessions, outside VS Code.
-     Open in a browser:  preview/index.html?appearance=brand|vscode&view=kanban|list
+     Open in a browser:  preview/index.html?appearance=brand|vscode&view=kanban|list&q=search+terms
      The vscode appearance uses VS Code "Dark Modern" theme colors, since there's no real theme here. -->
 <html lang="en">
 <head>
@@ -52,8 +52,12 @@
       s('e1', 'ended', 'Fix flaky date tests', 'the date tests fail at midnight UTC', 'web', undefined, 5 * 60 * min),
       s('e2', 'ended', 'Upgrade dependencies', 'bump React and the test runner', 'web', undefined, 20 * 60 * min),
     ];
+    // ?q= seeds the search box, the way VS Code restores saved webview state.
+    var uiState = params.get('q') ? { query: params.get('q') } : undefined;
     window.acquireVsCodeApi = function () {
       return {
+        getState: function () { return uiState; },
+        setState: function (s) { uiState = s; },
         postMessage: function (m) {
           if (m.type === 'ready') {
             window.postMessage({
