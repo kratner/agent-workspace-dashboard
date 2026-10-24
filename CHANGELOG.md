@@ -2,6 +2,15 @@
 
 Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 
+## 0.5.2 (2026-10-24)
+
+Fixes a board that stopped updating after you clicked a session to open it.
+
+- **The board keeps updating after you open a session.** Clicking a session, typically an Ended one, opens it in a Claude Code tab. The dashboard then stopped receiving updates until you closed and reopened it, so a session that started waiting on you didn't appear. It stopped because updates were skipped whenever VS Code reported the dashboard as hidden, even when it was still on screen.
+  - Updates are now always sent.
+  - The latest state is also resent whenever the dashboard comes back into view.
+- **The Agent Workspace log** notes when the dashboard is shown or hidden, to make reports like this easier to diagnose.
+
 ## 0.5.1 (2026-10-23)
 
 Waiting cards now say what the session is waiting for, and clicking a session running in a terminal takes you to that terminal. Sessions can no longer look alive just because Windows gave their old process ID to another program.

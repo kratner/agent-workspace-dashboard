@@ -50,6 +50,14 @@ export class DashboardPanel implements vscode.Disposable {
       vscode.workspace.onDidChangeConfiguration((e) => {
         if (e.affectsConfiguration('agentWorkspace.appearance') || e.affectsConfiguration('agentWorkspace.historyResultThreshold')) this.post();
       }),
+      // Coming back into view: resend the latest state, whether or not VS Code reloaded the webview.
+      panel.onDidChangeViewState(({ webviewPanel }) => {
+        log.info(`dashboard ${webviewPanel.visible ? 'shown' : 'hidden'}${webviewPanel.active ? ' (active)' : ''}`);
+        if (webviewPanel.visible) {
+          this.post();
+          void this.store.refresh();
+        }
+      }),
       panel.onDidDispose(() => this.dispose()),
     );
     panel.webview.html = this.html();
@@ -121,9 +129,10 @@ export class DashboardPanel implements vscode.Disposable {
   }
 
   private send(message: HostMessage): void {
-    // A hidden tab's webview is unloaded (no retainContextWhenHidden). It sends 'ready' when it
-    // comes back, and gets the current state then.
-    if (!this.panel.visible) return;
+    // Always send. A truly hidden webview just doesn't receive it (postMessage resolves false)
+    // and reloads with 'ready' when shown. But `panel.visible` can be false while the webview is
+    // still alive and on screen (e.g. after opening a session moves focus to a Claude tab), and
+    // skipping sends then left the board stale until it was reopened.
     this.panel.webview.postMessage(message).then(undefined, (err) => log.error(`posting ${message.type} to the webview failed`, err));
   }
 
