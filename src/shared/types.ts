@@ -53,7 +53,7 @@ export interface HistoryIndexStatus {
   done: boolean;
 }
 
-/** 'brand': KR black and yellow. 'vscode': follow the editor's color theme. */
+/** 'brand': the Four Ounces look (ink, or paper under a light theme). 'vscode': follow the editor's color theme. */
 export type Appearance = 'brand' | 'vscode';
 
 export interface DashboardState {

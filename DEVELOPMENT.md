@@ -142,6 +142,7 @@ The production build fails if either bundle leaves an import unbundled. The host
 `preview/index.html` loads the built webview in a normal browser with sample sessions, so you can check the design without VS Code. Run `npm run build` first. URL options:
 
 - `?appearance=vscode` shows the theme-following look (with VS Code Dark Modern colors).
+- `?theme=light` simulates a light VS Code theme, which switches the brand look to paper.
 - `?view=list` shows the List view.
 - `?q=api` fills the search box.
 - `&history=1` switches History on, with invented past sessions. `q=deploy` returns 340 of them, to show the short list. `q=breaking` matches only inside subagents.
@@ -182,10 +183,11 @@ Don't change existing view ids. They're what's saved as each workspace's active 
 
 ## Branding
 
-The icon, colors and type come from Keith Ratner's KR brand kit:
+The icon, colors and type come from the Four Ounces brand kit (`kratner/four-ounces-brand`). Products copy from the kit and never redefine its values; change them there first.
 
-- **Fonts:** `src/webview/fonts/` holds Archivo and Archivo Black, with their licenses in `licenses/`.
-- **The KR glyph:** `src/webview/components/KrGlyph.tsx` holds a copy of the brand kit's glyph path.
+- **Colors:** the `brand` appearance in `src/webview/styles.css` uses the kit's tokens: warm ink, or warm paper when VS Code has a light theme (`body.vscode-light`). Old Gold `#C9A24A` is a fill (primary toggles, the waiting pill, search highlights); gold as text or line work uses gold-ink, which is `#7A5C14` on paper. Status colors keep their meaning.
+- **Fonts:** `src/webview/fonts/` holds the kit's Inter (text) and Archivo Black (display) woff2 files, with their licenses in `licenses/`.
+- **Marks:** `src/webview/components/BrandMarks.tsx` holds the product's board glyph and a copy of the Four Ounces mark, shown in the credit line under the board.
 - **Icon working files:** they're in `branding/`.
   - `npm run brand` re-renders the icon concepts and writes `media/icon.png`.
   - `npm run brand:compare` checks a vector trace against its source image.

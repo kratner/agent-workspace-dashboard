@@ -2,6 +2,22 @@
 
 Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 
+## 0.6.0 (2026-10-25)
+
+Agent Workspace is now a Four Ounces project, and its look comes from the Four Ounces brand. The dashboard works the same way.
+
+![The Four Ounces look: warm ink, with Old Gold marking the sessions waiting on you](https://raw.githubusercontent.com/kratner/agent-workspace-dashboard/v0.6.0/media/screenshots/kanban-brand.png)
+
+- **New colors.** Warm ink replaces black, and Old Gold replaces the yellow for sessions waiting on you, the History toggle and search highlights.
+- **A light version.** When VS Code uses a light theme, the dashboard switches to warm paper, with a darker gold for gold text so it stays readable.
+- **New type.** Text is set in Inter; headings stay in Archivo Black. Both are bundled, so nothing loads from the web.
+- **New icon.** The board icon, drawn as one gold line on the ink tile.
+- **Credit line.** A small "Four Ounces" line under the board.
+
+### Upgrading
+
+- Nothing to change. If you set `agentWorkspace.appearance` to `vscode`, it still follows your color theme.
+
 ## 0.5.2 (2026-10-24)
 
 Fixes a board that stopped updating after you clicked a session to open it.

@@ -4,7 +4,7 @@ import { clampThreshold } from '../historyPaging';
 import { filterSessions, searchTerms } from '../search';
 import { HistoryPanel } from './HistoryPanel';
 import { VIEWS, findView } from '../viewRegistry';
-import { KrGlyph } from './KrGlyph';
+import { BoardGlyph, FourOuncesMark } from './BrandMarks';
 import { getUiState, log, post, setUiState } from '../vscodeApi';
 
 const TICK_MS = 15_000;
@@ -97,7 +97,7 @@ export function ViewManager() {
     <div className="app">
       <header className="toolbar">
         <div className="brand">
-          <KrGlyph />
+          <BoardGlyph />
           <h1>Agent Workspace</h1>
         </div>
         <div className="tabs" role="tablist" aria-label="View">
@@ -196,6 +196,10 @@ export function ViewManager() {
           </>
         )}
       </main>
+      <footer className="credit">
+        <FourOuncesMark />
+        <span>Four Ounces</span>
+      </footer>
     </div>
   );
 }

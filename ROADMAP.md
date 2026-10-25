@@ -9,6 +9,7 @@
 | 0.3.0 | 2026-10-23 | Search across the sessions on the dashboard |
 | 0.4.0 | 2026-10-23 | Search the full session history, including subagents |
 | 0.5.0 | 2026-10-23 | GitHub Releases built by Actions, one-line installers, in-extension update check |
+| 0.6.0 | 2026-10-25 | Four Ounces brand: ink and paper looks, Old Gold, Inter, new icon |
 
 The "Waiting on you" column was confirmed working in real use on 2026-10-23. Claude Code's status files do report sessions waiting for approval, so no hook is needed.
 

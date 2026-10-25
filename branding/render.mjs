@@ -1,4 +1,4 @@
-// Renders every SVG in branding/icon and branding/kr to PNGs in branding/preview, plus a
+// Renders every SVG in branding/icon to PNGs in branding/preview, plus a
 // contact sheet (preview/sheet.png) showing each mark at 128/32/16 px on dark and light
 // backgrounds, which is how they'll actually be seen.
 //   npm run brand
@@ -12,12 +12,12 @@ const out = join(root, 'preview');
 mkdirSync(out, { recursive: true });
 
 // The concept that ships as the extension's Marketplace / Extensions-view icon (package.json "icon").
-const EXTENSION_ICON = 'icon/d-board-kr.svg';
+const EXTENSION_ICON = 'icon/e-board-fo.svg';
 
 const render = (svg, width) => new Resvg(svg, { fitTo: { mode: 'width', value: width } }).render().asPng();
 const dataUri = (png) => `data:image/png;base64,${png.toString('base64')}`;
 
-const groups = ['icon', 'kr'].map((dir) => ({
+const groups = ['icon'].map((dir) => ({
   dir,
   marks: readdirSync(join(root, dir))
     .filter((f) => f.endsWith('.svg'))

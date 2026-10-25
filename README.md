@@ -18,7 +18,7 @@ See every Claude Code session you have running, as a Kanban board or a list, and
 - **Every session, wherever it runs.** It shows Claude Code panels in VS Code, the CLI in a terminal and background agents, across all your project folders.
 - **Click to open.** Clicking a card brings a session in this window to the front: its Claude Code tab, or the terminal it's running in. An ended session is resumed. For a session running elsewhere, it tells you where.
 - **Resume ended sessions.** **Copy resume** puts the `claude --resume` command for that session on your clipboard.
-- **Two looks.** The KR brand (black and yellow) by default, or follow your VS Code color theme.
+- **Two looks.** The Four Ounces look by default (warm ink, or warm paper when VS Code uses a light theme, with Old Gold marking what needs you), or follow your VS Code color theme.
 - **Easy to install and update.** One line installs it; after that it checks for new releases and updates itself on request.
 - **Read-only and local.** It reads files Claude Code already writes on your machine. It never starts, stops or changes a session, and none of your data leaves the machine. The history index is stored locally, in the extension's own storage. Its only network request is the daily update check, which asks GitHub for the latest release; you can turn it off.
 
@@ -110,11 +110,13 @@ Click **History** next to the search box. While it's on, a **From history** sect
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `agentWorkspace.appearance` | `brand` | `brand` is the KR black-and-yellow look. `vscode` follows your color theme; use it with light themes. |
+| `agentWorkspace.appearance` | `brand` | `brand` is the Four Ounces look: warm ink, or warm paper with a light VS Code theme. `vscode` follows your color theme. |
 | `agentWorkspace.endedWithinHours` | `24` | How far back to show ended sessions. `0` hides them. |
 | `agentWorkspace.showStatusBar` | `true` | Show the working and waiting counts in the status bar |
 | `agentWorkspace.historyResultThreshold` | `150` | History search: above this many matches (100–200), show the 25 most recent first, with a button to show all |
 | `agentWorkspace.checkForUpdates` | `true` | Check GitHub for a newer release about once a day and offer to install it |
+
+![The Four Ounces look with a light VS Code theme](media/screenshots/kanban-brand-light.png)
 
 ![Following the VS Code theme](media/screenshots/kanban-vscode.png)
 
@@ -150,8 +152,8 @@ If you've set `CLAUDE_CONFIG_DIR`, the dashboard reads that folder instead of `~
 
 ## Author
 
-Created by **Keith Ratner** ([github.com/kratner](https://github.com/kratner)). The icon, colors and type come from his KR brand.
+Created by **Keith Ratner** ([github.com/kratner](https://github.com/kratner)). A **Four Ounces** project: the icon, colors and type come from the Four Ounces brand kit.
 
 ## License
 
-[MIT](LICENSE) © 2026 Keith Ratner. The bundled fonts, Archivo and Archivo Black, are under the SIL Open Font License; see `licenses/`.
+[MIT](LICENSE) © 2026 Keith Ratner. The bundled fonts, Inter and Archivo Black, are under the SIL Open Font License; see `licenses/`.

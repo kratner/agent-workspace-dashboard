@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- Preview harness: loads the built webview (npm run build) with sample sessions, outside VS Code.
-     Open in a browser:  preview/index.html?appearance=brand|vscode&view=kanban|list&q=search+terms&history=1&indexing=1
+     Open in a browser:  preview/index.html?appearance=brand|vscode&theme=dark|light&view=kanban|list&q=search+terms&history=1&indexing=1
+     theme=light adds VS Code's body.vscode-light class, which switches the brand look to paper.
      The vscode appearance uses VS Code "Dark Modern" theme colors, since there's no real theme here. -->
 <html lang="en">
 <head>
@@ -33,6 +34,7 @@
   <div id="root"></div>
   <script>
     var params = new URLSearchParams(location.search);
+    document.body.className = params.get('theme') === 'light' ? 'vscode-light' : 'vscode-dark';
     var now = Date.now();
     var min = 60000;
     function s(id, state, title, prompt, folder, surface, ago) {

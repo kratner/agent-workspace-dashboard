@@ -2,7 +2,7 @@
   "name": "agent-workspace-dashboard",
   "displayName": "Agent Workspace Dashboard",
   "description": "See every Claude Code session you have running, as a Kanban board or a list, and spot the one that's waiting on you.",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "publisher": "kratner",
   "author": {
     "name": "Keith Ratner",
@@ -75,8 +75,8 @@
             "vscode"
           ],
           "enumDescriptions": [
-            "KR brand: black panel, yellow for sessions waiting on you, Archivo type.",
-            "Follow the current VS Code color theme (keeps the KR mark and type)."
+            "Four Ounces: warm ink panel (warm paper under a light theme), Old Gold for sessions waiting on you, Inter and Archivo Black type.",
+            "Follow the current VS Code color theme (keeps the product glyph and display type)."
           ],
           "default": "brand",
           "description": "How the dashboard looks."

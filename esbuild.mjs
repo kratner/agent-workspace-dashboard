@@ -37,7 +37,7 @@ const webview = {
   target: 'es2020',
   jsx: 'automatic',
   // Brand fonts are copied next to webview.css and referenced by relative URL.
-  loader: { '.ttf': 'file' },
+  loader: { '.woff2': 'file' },
   assetNames: 'fonts/[name]-[hash]',
   define: { 'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development') },
 };

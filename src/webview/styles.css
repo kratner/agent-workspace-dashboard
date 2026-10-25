@@ -1,33 +1,60 @@
 /* Two appearances share one stylesheet. Components only use the semantic variables below;
    each appearance (body[data-appearance]) sets them.
-   - brand:  Keith Ratner's KR brand kit: black, #FFF200, Archivo.
-   - vscode: follows the editor's color theme; keeps the KR mark and display type. */
+   - brand:  the Four Ounces kit (kratner/four-ounces-brand): warm ink, or warm paper under a light
+             VS Code theme; Old Gold for fills, gold-ink for gold text; Inter text, Archivo Black display.
+   - vscode: follows the editor's color theme; keeps the product glyph and display type. */
 
-@font-face { font-family: 'Archivo Black'; src: url('./fonts/ArchivoBlack-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
-@font-face { font-family: 'Archivo'; src: url('./fonts/Archivo-400.ttf') format('truetype'); font-weight: 400; font-display: swap; }
-@font-face { font-family: 'Archivo'; src: url('./fonts/Archivo-700.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Archivo Black'; src: url('./fonts/ArchivoBlack-Regular.latin.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('./fonts/Inter.latin.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
 
 :root {
   --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+  --gold: #c9a24a;
+  --gold-ink: #c9a24a;
 }
 
+/* Gold as text or line work on a light ground needs the darker gold-ink (5.5:1 on paper). */
+body.vscode-light,
+body.vscode-high-contrast-light {
+  --gold-ink: #7a5c14;
+}
+
+/* Four Ounces dark (tokens.css values). */
 body[data-appearance='brand'] {
-  --bg: #000000;
-  --surface: #111111;
-  --surface-hover: #1c1c1c;
-  --fg: #ffffff;
-  --muted: #8a8a8a;
-  --border: #262626;
-  --accent: #fff200;
-  --on-accent: #000000;
-  --link: #fff200;
-  --focus: #fff200;
-  --waiting: #fff200;
-  --busy: #ffffff;
-  --idle: #8a8a8a;
-  --ended: #454545;
-  --font-text: 'Archivo', system-ui, sans-serif;
+  --bg: #0e0d0b;
+  --surface: #151412;
+  --surface-hover: #1c1a17;
+  --fg: #ede8de;
+  --muted: #9a948a;
+  --border: #2c2a26;
+  --accent: var(--gold);
+  --accent-ink: var(--gold-ink);
+  --on-accent: #0e0d0b;
+  --link: var(--gold-ink);
+  --focus: var(--gold-ink);
+  --waiting: var(--gold);
+  --waiting-soft: #2b2518;
+  --busy: #ede8de;
+  --idle: #9a948a;
+  --ended: #4a463f;
+  --font-text: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-size: 13px;
+}
+
+/* Four Ounces light, when VS Code runs a light theme: paper ground, gold-ink for gold as text. */
+body.vscode-light[data-appearance='brand'],
+body.vscode-high-contrast-light[data-appearance='brand'] {
+  --bg: #f4f1ea;
+  --surface: #ffffff;
+  --surface-hover: #eae5da;
+  --fg: #1a1916;
+  --muted: #5f5a51;
+  --border: #d8d1c3;
+  --on-accent: #1a1916;
+  --waiting-soft: #f3e9cf;
+  --busy: #1a1916;
+  --idle: #5f5a51;
+  --ended: #b8b0a2;
 }
 
 body[data-appearance='vscode'] {
@@ -119,14 +146,14 @@ button {
   gap: 10px;
 }
 
-.kr-glyph {
-  width: 27px;
-  height: 20px;
+.fo-glyph {
+  width: 22px;
+  height: 22px;
   flex: none;
-  color: var(--accent);
+  color: var(--gold-ink);
 }
 
-body[data-appearance='vscode'] .kr-glyph {
+body[data-appearance='vscode'] .fo-glyph {
   color: var(--fg);
 }
 
@@ -419,7 +446,7 @@ body[data-appearance='brand'] .pill.state-waiting.nonzero {
 
 .hist-sub-arrow {
   margin-right: 6px;
-  color: var(--accent);
+  color: var(--accent-ink, var(--accent));
   font-weight: 700;
 }
 
@@ -530,7 +557,7 @@ body[data-appearance='vscode'] .count {
 
 body[data-appearance='brand'] .card.state-waiting {
   border-color: var(--waiting);
-  box-shadow: 0 0 0 1px var(--waiting), 0 0 14px rgba(255, 242, 0, 0.18);
+  box-shadow: 0 0 0 1px var(--waiting), 0 0 14px rgba(201, 162, 74, 0.2);
 }
 
 .card-title {
@@ -553,7 +580,7 @@ body[data-appearance='brand'] .card.state-waiting {
 
 .card-waiting {
   margin-top: 4px;
-  color: var(--waiting);
+  color: var(--accent-ink, var(--waiting));
   font-size: 12px;
   font-weight: 700;
 }
@@ -657,5 +684,16 @@ body[data-appearance='vscode'] .card-waiting {
 }
 
 body[data-appearance='brand'] .list tr.state-waiting {
-  background: rgba(255, 242, 0, 0.07);
+  background: var(--waiting-soft);
+}
+
+/* Studio credit */
+
+.credit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 16px;
+  color: var(--muted);
+  font-size: 11px;
 }
