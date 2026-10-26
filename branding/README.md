@@ -11,8 +11,8 @@ Working files for the Agent Workspace Dashboard icon.
 `icon/f-board-indigo.svg` is a copy of the kit's `logo/products/agent-workspace.svg`: the three-column board in Old
 Gold (`#C9A24A`) on Agent Workspace's own indigo ground (`#1A2236`), corner radius 28 on 128. Each Four Ounces tool
 has the same tile and gold glyph on its own dark ground, so they stay distinct in a row of icons. The filled card is
-the session waiting on you. In the webview, `BoardGlyph` (`src/webview/components/BrandMarks.tsx`) draws the same
-board as a bare line icon in `currentColor`, without the tile.
+the session waiting on you. The webview's header shows the same icon, tile and all, from `ProductIcon` in
+`src/webview/components/BrandMarks.tsx`.
 
 ## Earlier concepts
 

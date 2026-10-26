@@ -4,7 +4,7 @@ import { clampThreshold } from '../historyPaging';
 import { filterSessions, searchTerms } from '../search';
 import { HistoryPanel } from './HistoryPanel';
 import { VIEWS, findView } from '../viewRegistry';
-import { BoardGlyph, FourOuncesMark } from './BrandMarks';
+import { FourOuncesMark, ProductIcon } from './BrandMarks';
 import { getUiState, log, post, setUiState } from '../vscodeApi';
 
 const TICK_MS = 15_000;
@@ -97,7 +97,7 @@ export function ViewManager() {
     <div className="app">
       <header className="toolbar">
         <div className="brand">
-          <BoardGlyph />
+          <ProductIcon />
           <h1>Agent Workspace</h1>
         </div>
         <div className="tabs" role="tablist" aria-label="View">

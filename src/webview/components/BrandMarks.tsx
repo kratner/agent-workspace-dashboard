@@ -1,16 +1,17 @@
 // Brand marks from the Four Ounces kit (kratner/four-ounces-brand). Copies of its geometry; change them there first.
 
-// Agent Workspace's product glyph: a three-column board drawn as one line icon, with the
-// first column's top card filled (the session waiting on you). currentColor, so the
-// stylesheet picks gold or the theme's text color per appearance.
-export function BoardGlyph() {
+// Agent Workspace's product icon, the same drawing as the extension icon and fourounces.live: the
+// board in Old Gold on its indigo tile (branding/icon/f-board-indigo.svg). The filled card is the
+// session waiting on you. Fixed colors, so it looks the same in every appearance and theme.
+export function ProductIcon() {
   return (
-    <svg className="fo-glyph" viewBox="0 0 24 24" aria-hidden="true">
-      <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="16" rx="3" />
-        <path d="M9 4v16M15 4v16" />
+    <svg className="product-icon" viewBox="0 0 128 128" aria-hidden="true">
+      <rect width="128" height="128" rx="28" fill="#1A2236" />
+      <g fill="none" stroke="#C9A24A" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="24" y="30" width="80" height="68" rx="14" />
+        <path d="M50.7 30V98M77.3 30V98" />
       </g>
-      <rect x="4.6" y="7" width="2.8" height="4" rx="1" fill="currentColor" />
+      <rect x="32" y="40" width="11" height="18" rx="4" fill="#C9A24A" />
     </svg>
   );
 }
