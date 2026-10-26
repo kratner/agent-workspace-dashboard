@@ -8,7 +8,11 @@ Working files for the Agent Workspace Dashboard icon.
 
 ## The shipping icon
 
-`icon/e-board-fo.svg` follows the kit's product system: one Old Gold (`#C9A24A`) line glyph on the ink tile (`#0E0D0B`, corner radius 28 on 128). The glyph is a three-column board; the filled card is the session waiting on you. It is the same geometry as `BoardGlyph` in `src/webview/components/BrandMarks.tsx`, scaled 4×.
+`icon/f-board-indigo.svg` is a copy of the kit's `logo/products/agent-workspace.svg`: the three-column board in Old
+Gold (`#C9A24A`) on Agent Workspace's own indigo ground (`#1A2236`), corner radius 28 on 128. Each Four Ounces tool
+has the same tile and gold glyph on its own dark ground, so they stay distinct in a row of icons. The filled card is
+the session waiting on you. In the webview, `BoardGlyph` (`src/webview/components/BrandMarks.tsx`) draws the same
+board as a bare line icon in `currentColor`, without the tile.
 
 ## Earlier concepts
 
@@ -19,7 +23,8 @@ Concepts A–C predate the brand and are kept for reference. They used the dashb
 | `icon/a-board.svg` | Three Kanban columns; the single glowing amber card is the session waiting on you. |
 | `icon/b-stack.svg` | Three session rows with status dots, like the List view; the waiting row is outlined. |
 | `icon/c-pulse.svg` | Board columns with a live heartbeat line crossing them. |
-| `icon/e-board-fo.svg` | **Shipping icon** (see above). |
+| `icon/e-board-fo.svg` | The v0.6.0 icon: the board on the ink tile, before each tool got its own ground. |
+| `icon/f-board-indigo.svg` | **Shipping icon** (see above). |
 
 ## Rendering
 

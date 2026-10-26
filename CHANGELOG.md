@@ -2,6 +2,10 @@
 
 Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 
+## Unreleased
+
+- **Icon on its own ground.** The board icon stays in Old Gold, now on an indigo tile instead of black, so Agent Workspace is easy to pick out next to the other Four Ounces tools (MingTab is lacquer red, Social Hub jade).
+
 ## 0.6.0 (2026-10-25)
 
 Agent Workspace is now a Four Ounces project, and its look comes from the Four Ounces brand. The dashboard works the same way.
