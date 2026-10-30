@@ -2,7 +2,9 @@
 
 Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 
-## Unreleased
+## 0.6.2 (2026-10-30)
+
+Update notices now reach VS Code windows that stay open for days. Install this one by hand; after it, new versions find you.
 
 - **Update notices reach windows that stay open.** The daily check for a new release only ran when VS Code started, so a window left open for days never heard about one. It now also looks every hour whether a day has passed since the last check.
 
