@@ -12,7 +12,7 @@ const out = join(root, 'preview');
 mkdirSync(out, { recursive: true });
 
 // The concept that ships as the extension's Marketplace / Extensions-view icon (package.json "icon").
-const EXTENSION_ICON = 'icon/f-board-indigo.svg';
+const EXTENSION_ICON = 'icon/g-board-lapis.svg';
 
 const render = (svg, width) => new Resvg(svg, { fitTo: { mode: 'width', value: width } }).render().asPng();
 const dataUri = (png) => `data:image/png;base64,${png.toString('base64')}`;

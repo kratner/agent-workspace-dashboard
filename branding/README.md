@@ -8,10 +8,11 @@ Working files for the Agent Workspace Dashboard icon.
 
 ## The shipping icon
 
-`icon/f-board-indigo.svg` is a copy of the kit's `logo/products/agent-workspace.svg`: the three-column board in Old
-Gold (`#C9A24A`) on Agent Workspace's own indigo ground (`#1A2236`), corner radius 28 on 128. Each Four Ounces tool
-has the same tile and gold glyph on its own dark ground, so they stay distinct in a row of icons. The filled card is
-the session waiting on you. The webview's header shows the same icon, tile and all, from `ProductIcon` in
+`icon/g-board-lapis.svg` is a copy of the kit's `logo/products/agent-workspace.svg`: the three-column board in cream
+(`#F4EAD5`) on a lapis tile (`#2B4C9B`), corner radius 28 on 128. The earlier indigo tile (`#1A2236`, concept F)
+vanished against dark backgrounds, so on 2026-10-30 it moved to the same treatment as MingTab's red seal: a cream
+glyph on a mid-tone pigment. The options are in [`icon-ground/`](icon-ground/index.html). The filled card is the
+session waiting on you. The webview's header shows the same icon, tile and all, from `ProductIcon` in
 `src/webview/components/BrandMarks.tsx`.
 
 ## Earlier concepts

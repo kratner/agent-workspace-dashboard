@@ -4,8 +4,8 @@ Each version starts with a short summary, then the details. The same text become
 
 ## Unreleased
 
-- **Icon on its own ground.** The board icon stays in Old Gold, now on an indigo tile instead of black, so Agent Workspace is easy to pick out next to the other Four Ounces tools (MingTab is lacquer red, Social Hub jade).
-- **Same icon in the dashboard.** The top-left of the board shows that indigo icon, as on [fourounces.live](https://fourounces.live), instead of a bare gold line drawing.
+- **Icon on its own ground.** The board icon is now cream on a lapis-blue tile instead of gold on black, so Agent Workspace stands out on dark backgrounds and next to the other Four Ounces tools (MingTab is a red seal).
+- **Same icon in the dashboard.** The top-left of the board shows that lapis icon, as on [fourounces.live](https://fourounces.live), instead of a bare gold line drawing.
 
 ## 0.6.0 (2026-10-25)
 

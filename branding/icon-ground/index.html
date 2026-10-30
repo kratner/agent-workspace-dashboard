@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Workspace icon grounds</title>
+<!-- Local comparison page for Agent Workspace's icon background: the board glyph
+     (branding/icon/f-board-indigo.svg) recoloured and shown at real size in the dashboard header and
+     VS Code. Same method as MingTab's branding/icon-ground/. Nothing here ships. -->
+<style>
+@font-face { font-family: 'Inter'; src: url('../../src/webview/fonts/Inter.latin.woff2') format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'Archivo Black'; src: url('../../src/webview/fonts/ArchivoBlack-Regular.latin.woff2') format('woff2'); }
+:root { color-scheme: dark; --bg: #0E0D0B; --line: #2C2A26; --text: #EDE8DE; --text-2: #C9C3B8; --muted: #9A948A; --gold: #C9A24A; --gold-soft: #2B2518; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 Inter, system-ui, sans-serif; }
+main { max-width: 1280px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font: 400 28px 'Archivo Black', sans-serif; letter-spacing: .02em; text-transform: uppercase; margin: 0 0 6px; }
+.lede { color: var(--text-2); max-width: 80ch; margin: 0 0 8px; }
+.option { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; padding: 26px 0; border-top: 1px solid var(--line); }
+@media (max-width: 900px) { .option { grid-template-columns: 1fr; } }
+.option h2 { margin: 0 0 4px; font: 600 19px Inter, sans-serif; display: flex; align-items: center; gap: 10px; }
+.option h2 b { font: 400 13px 'Archivo Black', sans-serif; color: var(--gold); letter-spacing: .04em; }
+.swatch { width: 16px; height: 16px; border-radius: 4px; border: 1px solid #ffffff33; }
+.option p { margin: 0 0 6px; color: var(--text-2); font-size: 14px; }
+.nums { font-size: 12px; color: var(--muted); }
+.scenes { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; align-content: start; align-items: start; }
+.scene { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.scene small { display: block; font-size: 11px; padding: 4px 10px; }
+/* The dashboard header in its four looks: brand ink / brand paper / VS Code Dark Modern / VS Code Light Modern. */
+.header { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; }
+.header img { width: 22px; height: 22px; }
+.header span { font: 400 14px 'Archivo Black', sans-serif; letter-spacing: .02em; text-transform: uppercase; }
+.ink .header { background: #0E0D0B; color: #EDE8DE; } .ink small { background: #151412; color: #9A948A; }
+.paper .header { background: #F4F1EA; color: #1A1916; } .paper small { background: #EAE5DA; color: #5F5A51; }
+.vsd .header { background: #1F1F1F; color: #CCCCCC; } .vsd small { background: #181818; color: #9D9D9D; }
+.vsl .header { background: #FFFFFF; color: #3B3B3B; } .vsl small { background: #F8F8F8; color: #6E6E6E; }
+/* VS Code's Extensions list: a 42 px icon beside the name. */
+.ext { display: flex; align-items: center; gap: 10px; padding: 10px 14px; font: 13px system-ui, sans-serif; }
+.ext img { width: 42px; height: 42px; } .ext b { display: block; } .ext em { font-style: normal; opacity: .7; font-size: 12px; }
+.vsd .ext { background: #181818; color: #CCCCCC; } .vsl .ext { background: #F8F8F8; color: #3B3B3B; }
+.family { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px; }
+.family img { width: 32px; height: 32px; } .family img.big { width: 96px; height: 96px; }
+.ink .family { background: #0E0D0B; } .paper .family { background: #F4F1EA; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Agent Workspace icon grounds</h1>
+  <p class="lede">The same problem MingTab had: the dark indigo tile has a contrast of only 1.1 to 1.2 against the
+    dashboard's dark header and VS Code's dark theme, so you see a gold board on a smudge. Each option below is shown at
+    real size in the dashboard header in its four looks, in VS Code's Extensions list, and with its Four Ounces
+    siblings.</p>
+  <p class="lede">Gold on a mid-tone blue drops to 3.9:1, below the brand's 4.5:1 rule, so the blue options use a cream
+    glyph, the same treatment as MingTab's red seal.</p>
+  <div id="options"></div>
+</main>
+<script>
+const board = (ground, ink) => 'data:image/svg+xml,' + encodeURIComponent(
+  `<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><rect width="128" height="128" rx="28" fill="${ground}"/>` +
+  `<g fill="none" stroke="${ink}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="30" width="80" height="68" rx="14"/><path d="M50.7 30V98M77.3 30V98"/></g>` +
+  `<rect x="32" y="40" width="11" height="18" rx="4" fill="${ink}"/></svg>`);
+const MINGTAB = '../../../mingtab/branding/icons/h-ming-seal.svg';
+const SOCIAL = 'data:image/svg+xml,' + encodeURIComponent('<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><rect width="128" height="128" rx="28" fill="#123029"/><g fill="none" stroke="#C9A24A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"><circle cx="100.0" cy="64.0" r="7"/><path d="M81.0 64.0L91.0 64.0"/><circle cx="82.0" cy="95.2" r="7"/><path d="M72.5 78.7L77.5 87.4"/><circle cx="46.0" cy="95.2" r="7"/><path d="M55.5 78.7L50.5 87.4"/><circle cx="28.0" cy="64.0" r="7"/><path d="M47.0 64.0L37.0 64.0"/><circle cx="46.0" cy="32.8" r="7"/><path d="M55.5 49.3L50.5 40.6"/><circle cx="82.0" cy="32.8" r="7"/><path d="M72.5 49.3L77.5 40.6"/><circle cx="64" cy="64" r="9"/></g></svg>');
+const GOLD = '#C9A24A', CREAM = '#F4EAD5';
+const OPTIONS = [
+  { l: 'A', name: 'Indigo (current)', ground: '#1A2236', ink: GOLD, nums: 'Gold on tile 6.6:1 · tile against dark header 1.23, VS Code dark 1.12', note: 'Disappears in the dark header and VS Code\'s dark theme; fine on light.' },
+  { l: 'B', name: 'Indigo dye', ground: '#2E3F8F', ink: CREAM, nums: 'Cream on tile 7.9:1 · tile against dark header 2.06, VS Code dark 1.88', note: 'The deep blue of indigo-dyed cloth, with a cream board. Still clearly indigo, now visible on dark. The closest to the current colour.' },
+  { l: 'C', name: 'Lapis', ground: '#2B4C9B', ink: CREAM, nums: 'Cream on tile 6.7:1 · tile against dark header 2.41, VS Code dark 2.21', note: 'A brighter, slightly greener blue, like lapis lazuli. A good partner to MingTab\'s vermilion: both read as traditional pigments.' },
+  { l: 'D', name: 'Cobalt', ground: '#2F55B8', ink: CREAM, nums: 'Cream on tile 5.6:1 · tile against dark header 2.88, VS Code dark 2.63', note: 'The brightest blue here, the most visible on dark. Starts to look like a generic "app blue".' },
+  { l: 'E', name: 'Slate blue', ground: '#3A4F7A', ink: CREAM, nums: 'Cream on tile 6.8:1 · tile against dark header 2.39, VS Code dark 2.18', note: 'A greyer, quieter blue. Visible on dark without being loud; less colourful next to MingTab\'s red.' },
+  { l: 'F', name: 'Gold tile, indigo board', ground: GOLD, ink: '#1A2236', nums: 'Indigo on gold 6.6:1 · tile against dark header 8.09, but only 2.13 on paper', note: 'Inverted: the most visible on dark, but weak on the light paper header, and it would look like a gold button rather than a product icon.' },
+];
+document.getElementById('options').innerHTML = OPTIONS.map((o) => {
+  const icon = board(o.ground, o.ink);
+  const header = (cls, label) => `<div class="scene ${cls}"><div class="header"><img src="${icon}" alt=""><span>Agent Workspace</span></div><small>${label}</small></div>`;
+  const ext = (cls, label) => `<div class="scene ${cls}"><div class="ext"><img src="${icon}" alt=""><div><b>Agent Workspace Dashboard</b><em>kratner · Every Claude Code session on one board</em></div></div><small>${label}</small></div>`;
+  const fam = (cls, label) => `<div class="scene ${cls}"><div class="family"><img src="${icon}" alt=""><img src="${MINGTAB}" alt=""><img src="${SOCIAL}" alt=""><img class="big" src="${icon}" alt=""></div><small>${label}</small></div>`;
+  return `<section class="option" aria-labelledby="h-${o.l}">
+    <div><h2 id="h-${o.l}"><b>${o.l}</b><span class="swatch" style="background:${o.ground}"></span>${o.name}</h2>
+      <p>${o.note}</p><p class="nums">${o.nums}</p></div>
+    <div class="scenes">${header('ink', 'Dashboard header, brand dark')}${header('paper', 'Dashboard header, brand light')}
+      ${header('vsd', 'Dashboard header, VS Code dark')}${header('vsl', 'Dashboard header, VS Code light')}
+      ${ext('vsd', 'Extensions list, VS Code dark')}${ext('vsl', 'Extensions list, VS Code light')}
+      ${fam('ink', 'With MingTab and Social Hub, dark')}${fam('paper', 'With MingTab and Social Hub, light')}</div></section>`;
+}).join('');
+</script>
+</body>
+</html>
