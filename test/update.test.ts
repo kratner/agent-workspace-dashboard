@@ -3,7 +3,18 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { test } from 'node:test';
-import { isNewer, sha256, vsixAsset } from '../src/update/releaseClient';
+import { isCheckDue, isNewer, sha256, vsixAsset } from '../src/update/releaseClient';
+
+test('the daily check is due after a day, including in a window that stayed open', () => {
+  const day = 86_400_000;
+  const started = Date.UTC(2026, 9, 29, 5, 38); // VS Code started and checked
+  assert.equal(isCheckDue(0, started), true, 'never checked');
+  assert.equal(isCheckDue(started, started + 60_000), false, 'checked a minute ago');
+  // The hourly look in a window left open: 0.6.1 came out 2026-10-30 05:16 UTC, and before
+  // 0.6.2 nothing looked again after the startup check.
+  assert.equal(isCheckDue(started, started + day - 3_600_000), false, '23 hours later');
+  assert.equal(isCheckDue(started, started + day + 3_600_000), true, '25 hours later');
+});
 
 test('update check compares versions numerically, not as text', () => {
   assert.equal(isNewer('0.5.0', '0.4.0'), true);

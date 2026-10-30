@@ -33,6 +33,11 @@ export function isNewer(a: string, b: string): boolean {
   return false;
 }
 
+/** True when the daily check is due: never checked, or the last check was over a day ago. */
+export function isCheckDue(lastCheck: number, now: number, dayMs = 86_400_000): boolean {
+  return now - lastCheck > dayMs;
+}
+
 export function vsixAsset(release: Release): ReleaseAsset | undefined {
   return release.assets.find((a) => a.name.endsWith('.vsix'));
 }

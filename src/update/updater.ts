@@ -2,27 +2,32 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { log } from '../log';
-import { downloadVerified, isNewer, latestRelease, vsixAsset } from './releaseClient';
+import { downloadVerified, isCheckDue, isNewer, latestRelease, vsixAsset } from './releaseClient';
 
 // While the extension is distributed through GitHub Releases rather than the Marketplace,
 // it checks for new releases itself: about once a day, and on demand from the
-// "Check for Updates" command. Once it's on the Marketplace, VS Code updates it and this
+// "Check for Updates" command. "Once a day" holds while VS Code stays open for days: besides
+// the check shortly after startup, it looks every hour whether a day has passed since the last
+// check. The last-check time is shared by all windows, so they don't each check. Once it's on the Marketplace, VS Code updates it and this
 // check should be switched off (agentWorkspace.checkForUpdates).
 
-const DAY_MS = 86_400_000;
 const STARTUP_DELAY_MS = 30_000;
+const RECHECK_EVERY_MS = 3_600_000;
 const LAST_CHECK_KEY = 'agentWorkspace.lastUpdateCheck';
 const SKIPPED_KEY = 'agentWorkspace.skippedVersion';
 
 export function registerUpdater(context: vscode.ExtensionContext): vscode.Disposable[] {
   const check = (manual: boolean) => checkForUpdates(context, manual).catch((err) => log.error('update check failed', err));
-  const timer = setTimeout(() => {
+  const checkIfDue = () => {
     const enabled = vscode.workspace.getConfiguration('agentWorkspace').get<boolean>('checkForUpdates', true);
     const last = context.globalState.get<number>(LAST_CHECK_KEY, 0);
-    if (enabled && context.extensionMode === vscode.ExtensionMode.Production && Date.now() - last > DAY_MS) void check(false);
-  }, STARTUP_DELAY_MS);
+    if (enabled && context.extensionMode === vscode.ExtensionMode.Production && isCheckDue(last, Date.now())) void check(false);
+  };
+  const timer = setTimeout(checkIfDue, STARTUP_DELAY_MS);
+  const hourly = setInterval(checkIfDue, RECHECK_EVERY_MS);
   return [
     { dispose: () => clearTimeout(timer) },
+    { dispose: () => clearInterval(hourly) },
     vscode.commands.registerCommand('agentWorkspace.checkForUpdates', () => check(true)),
   ];
 }
