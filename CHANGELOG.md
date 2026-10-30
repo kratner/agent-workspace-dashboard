@@ -2,7 +2,9 @@
 
 Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 
-## Unreleased
+## 0.6.1 (2026-10-30)
+
+A new icon that stands out on dark backgrounds, shown in the dashboard's header too. Nothing else changes.
 
 - **Icon on its own ground.** The board icon is now cream on a lapis-blue tile instead of gold on black, so Agent Workspace stands out on dark backgrounds and next to the other Four Ounces tools (MingTab is a red seal).
 - **Same icon in the dashboard.** The top-left of the board shows that lapis icon, as on [fourounces.live](https://fourounces.live), instead of a bare gold line drawing.

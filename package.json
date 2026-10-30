@@ -2,7 +2,7 @@
   "name": "agent-workspace-dashboard",
   "displayName": "Agent Workspace Dashboard",
   "description": "See every Claude Code session you have running, as a Kanban board or a list, and spot the one that's waiting on you.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "publisher": "kratner",
   "author": {
     "name": "Keith Ratner",
