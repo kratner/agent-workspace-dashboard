@@ -685,10 +685,20 @@ body[data-appearance='brand'] .list tr.state-waiting {
 /* Studio credit */
 
 .credit {
-  display: flex;
+  padding: 16px;
+  font-size: 11px;
+}
+
+/* VS Code opens a webview's https links in the browser. */
+.credit a {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 16px;
   color: var(--muted);
-  font-size: 11px;
+  text-decoration: none;
+}
+
+.credit a:hover {
+  color: var(--fg);
+  text-decoration: underline;
 }

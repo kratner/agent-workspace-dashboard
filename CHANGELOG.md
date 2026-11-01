@@ -2,6 +2,10 @@
 
 Each version starts with a short summary, then the details. The same text becomes that version's notes on the [Releases page](https://github.com/kratner/agent-workspace-dashboard/releases).
 
+## Unreleased
+
+- **The Four Ounces mark at the bottom links to fourounces.live**, opening in your browser, as MingTab's About page does.
+
 ## 0.6.2 (2026-10-30)
 
 Update notices now reach VS Code windows that stay open for days. Install this one by hand; after it, new versions find you.

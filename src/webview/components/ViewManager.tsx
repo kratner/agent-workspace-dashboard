@@ -197,8 +197,10 @@ export function ViewManager() {
         )}
       </main>
       <footer className="credit">
-        <FourOuncesMark />
-        <span>Four Ounces</span>
+        <a href="https://fourounces.live/" target="_blank" rel="noreferrer">
+          <FourOuncesMark />
+          <span>Four Ounces</span>
+        </a>
       </footer>
     </div>
   );
